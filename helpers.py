@@ -27,10 +27,10 @@ def translate_to_bicep(not_bicep: str, type_given: str = '', nested: bool = Fals
     return f"'{not_bicep}'"
 
 
-def indent(indent_level: int = 1):
+def indent(indent_level: int = 1) -> str:
     return "    " * indent_level
 
-def indentString(input_string: str, indent_level: int = 1, indent_first_line: bool = True):
+def indentString(input_string: str, indent_level: int = 1, indent_first_line: bool = True) -> str:
     lines = input_string.splitlines()
 
     indented_string = ''.join([indent(indent_level * indent_first_line), lines.pop(0)])
