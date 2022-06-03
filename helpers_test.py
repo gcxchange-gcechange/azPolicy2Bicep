@@ -1,7 +1,7 @@
 import unittest
 import json
 
-from helpers import translate_to_bicep
+from helpers import translate_to_bicep, indent, indentString
 
 # need to be able to handle: 
 #   string, array, object, boolean, integer, float, or datetime
@@ -40,6 +40,25 @@ class TestBicepTranslation(unittest.TestCase):
         Self.assertEqual( translate_to_bicep(testInput), expectedOutput )
 
 # Objects, Arrays, and everything put together
+    def test_array(Self):
+        testInput = [True, "test", 2.73]
+        expectedOutput = """[
+    True
+    'test'
+    2.73
+]"""
+        Self.assertEqual( translate_to_bicep(testInput, "Array"), expectedOutput )
+        Self.assertEqual( translate_to_bicep(testInput), expectedOutput )
+
+    def test_object(Self):
+        testInput = {'foo': 'bar', 'test': 123}
+        expectedOutput = """{
+    foo: 'bar'
+    test: 123
+}"""
+        Self.assertEqual( translate_to_bicep(testInput, "Object"), expectedOutput )
+        Self.assertEqual( translate_to_bicep(testInput), expectedOutput )
+
     def test_translate_nested_object_with_arrays(Self):
         testInput = json.loads("""{
         "listOfAllowedLocations": {
@@ -52,8 +71,8 @@ class TestBicepTranslation(unittest.TestCase):
         expectedOutput = """{
     listOfAllowedLocations: {
         value: [
-        'canadacentral'
-        'canadaeast'
+            'canadacentral'
+            'canadaeast'
         ]
     }
 }"""
@@ -62,9 +81,40 @@ class TestBicepTranslation(unittest.TestCase):
 
 
 
+class TestIndent(unittest.TestCase):
 
+    def test_3_level_indent(Self):
+        indent_level = 3
+        expected_output = "            "
+        Self.assertEqual( indent(indent_level=indent_level), expected_output )
 
+    def test_0_level_indent(Self):
+        indent_level = 0
+        expected_output = ""
+        Self.assertEqual( indent(indent_level=indent_level), expected_output )
 
+    def test_default_level_indent(Self):
+        expected_output = "    "
+        Self.assertEqual( indent(), expected_output )
+
+    def test_default_indent_string(Self):
+        test_input = "Hi! I'm a test string!"
+        expected_output = "    Hi! I'm a test string!"
+        Self.assertEqual( indentString(test_input), expected_output )
+
+    def test_indent_bicep_array(Self):
+        indent_level = 2
+        test_input = """
+[
+    'test'
+    123
+]"""
+        expected_output = """        
+        [
+            'test'
+            123
+        ]"""
+        Self.assertEqual( indentString(test_input, indent_level=indent_level), expected_output )
 
 
 if __name__ == '__main__':
