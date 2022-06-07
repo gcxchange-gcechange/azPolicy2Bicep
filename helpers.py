@@ -1,8 +1,8 @@
 
 
 def translate_to_bicep(not_bicep: str, type_given: str = '', nested: bool = False) -> str:
-    if type(not_bicep) in [int, bool, float] \
-            or type_given.lower() in ['int', 'boolean', 'float']:
+    if type(not_bicep) in [int, bool] \
+            or type_given.lower() in ['int', 'boolean']:
         return f"{not_bicep}"
 
     if isinstance(not_bicep, str) \
@@ -24,7 +24,7 @@ def translate_to_bicep(not_bicep: str, type_given: str = '', nested: bool = Fals
         bicep_object += "}"
         return indentString(bicep_object, nested, indent_first_line=False)
 
-    return f"'{not_bicep}'"
+    return f"'{not_bicep}'" # mostly for floats, bicep doesn't have non-int number types
 
 
 def indent(indent_level: int = 1) -> str:

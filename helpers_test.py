@@ -29,7 +29,7 @@ class TestBicepTranslation(unittest.TestCase):
 
     def test_translate_float(Self):
         testInput = 3.1415
-        expectedOutput = "3.1415"
+        expectedOutput = "'3.1415'"
         Self.assertEqual( translate_to_bicep(testInput, "Float"), expectedOutput )
         Self.assertEqual( translate_to_bicep(testInput), expectedOutput )
 
@@ -45,7 +45,7 @@ class TestBicepTranslation(unittest.TestCase):
         expectedOutput = """[
     True
     'test'
-    2.73
+    '2.73'
 ]"""
         Self.assertEqual( translate_to_bicep(testInput, "Array"), expectedOutput )
         Self.assertEqual( translate_to_bicep(testInput), expectedOutput )
