@@ -95,3 +95,295 @@ output ID string = policy_definition.id
 output displayName string = policy_definition.properties.displayName
 """
         Self.assertEqual( generate_bicep_definition(json.loads(test_definition_json)), expected_output )
+
+    def test_generate_bicep_definition_with_multiple_parameters(Self):
+        test_definition_json = """{
+    "Name": "009259b0-12e8-42c9-94e7-7af86aa58d13",
+    "ResourceId": "/providers/Microsoft.Authorization/policyDefinitions/009259b0-12e8-42c9-94e7-7af86aa58d13",
+    "ResourceName": "009259b0-12e8-42c9-94e7-7af86aa58d13",
+    "ResourceType": "Microsoft.Authorization/policyDefinitions",
+    "SubscriptionId": null,
+    "Properties": {
+      "Description": "Configure VMSS created with Shared Image Gallery images to automatically install the Guest Attestation extension to allow Azure Security Center to proactively attest and monitor the boot integrity. Boot integrity is attested via Remote Attestation.",
+      "DisplayName": "[Preview]: Configure VMSS created with Shared Image Gallery images to install the Guest Attestation extension",
+      "Metadata": {
+        "category": "Security Center",
+        "version": "2.0.0-preview",
+        "preview": true
+      },
+      "Mode": "Indexed",
+      "Parameters": {
+        "effect": {
+          "type": "String",
+          "metadata": {
+            "displayName": "Effect",
+            "description": "Enable or disable the execution of the policy"
+          },
+          "allowedValues": [
+            "DeployIfNotExists",
+            "Disabled"
+          ],
+          "defaultValue": "DeployIfNotExists"
+        },
+        "attestationEndpoint": {
+          "type": "String",
+          "metadata": {
+            "displayName": "Guest attestation tenant URL",
+            "description": "The Microsoft Azure Attestation (MAA) custom tenant URL."
+          },
+          "defaultValue": ""
+        }
+      },
+      "PolicyRule": {
+        "if": {
+          "allOf": [
+            {
+              "field": "type",
+              "equals": "Microsoft.Compute/virtualMachineScaleSets"
+            },
+            {
+              "field": "Microsoft.Compute/virtualMachineScaleSets/virtualMachineProfile.securityProfile.securityType",
+              "equals": "TrustedLaunch"
+            },
+            {
+              "field": "Microsoft.Compute/virtualMachineScaleSets/virtualMachineProfile.securityProfile.uefiSettings",
+              "exists": "true"
+            },
+            {
+              "field": "Microsoft.Compute/virtualMachineScaleSets/virtualMachineProfile.securityProfile.uefiSettings.vTpmEnabled",
+              "equals": "true"
+            },
+            {
+              "field": "Microsoft.Compute/virtualMachineScaleSets/virtualMachineProfile.securityProfile.uefiSettings.secureBootEnabled",
+              "equals": "true"
+            },
+            {
+              "field": "Microsoft.Compute/imageid",
+              "exists": "true"
+            }
+          ]
+        },
+        "then": {
+          "effect": "[parameters('effect')]",
+          "details": {
+            "type": "Microsoft.Compute/virtualMachineScaleSets/extensions",
+            "existenceCondition": {
+              "allOf": [
+                {
+                  "field": "Microsoft.Compute/virtualMachineScaleSets/extensions/publisher",
+                  "in": [
+                    "Microsoft.Azure.Security.LinuxAttestation",
+                    "Microsoft.Azure.Security.WindowsAttestation"
+                  ]
+                },
+                {
+                  "field": "Microsoft.Compute/virtualMachineScaleSets/extensions/type",
+                  "equals": "GuestAttestation"
+                },
+                {
+                  "field": "Microsoft.Compute/virtualMachineScaleSets/extensions/provisioningState",
+                  "in": [
+                    "Succeeded",
+                    "Provisioning succeeded"
+                  ]
+                }
+              ]
+            },
+            "roleDefinitionIds": [
+              "/providers/microsoft.authorization/roleDefinitions/acdd72a7-3385-48ef-bd42-f606fba81ae7",
+              "/providers/microsoft.authorization/roleDefinitions/9980e02c-c2be-4d73-94e8-173b1dc7cf3c"
+            ],
+            "deployment": {
+              "properties": {
+                "mode": "incremental",
+                "parameters": {
+                  "vmName": {
+                    "value": "[field('name')]"
+                  },
+                  "location": {
+                    "value": "[field('location')]"
+                  },
+                  "imageId": {
+                    "value": "[field('Microsoft.Compute/imageid')]"
+                  },
+                  "attestationEndpoint": {
+                    "value": "[parameters('attestationEndpoint')]"
+                  }
+                },
+                "template": {
+                  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                  "contentVersion": "1.0.0.0",
+                  "parameters": {
+                    "vmName": "@{type=string}",
+                    "location": "@{type=string}",
+                    "imageId": "@{type=string}",
+                    "attestationEndpoint": "@{type=string}"
+                  },
+                  "variables": {
+                    "extensionName": "GuestAttestation",
+                    "extensionPublisherPrefix": "Microsoft.Azure.Security.",
+                    "extensionPublisherSuffix": "Attestation",
+                    "extensionVersion": "1.0",
+                    "maaTenantName": "GuestAttestation",
+                    "ascReportingEndpoint": ""
+                  },
+                  "resources": [
+                    "@{type=Microsoft.Compute/virtualMachineScaleSets/extensions; apiVersion=2018-10-01; name=[concat(parameters('vmName'), '/', variables('extensionName'))]; location=[parameters('location')]; properties=}"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "PolicyType": 2
+    },
+    "PolicyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/009259b0-12e8-42c9-94e7-7af86aa58d13"
+  }"""
+        expected_output = """targetScope = 'managementGroup'
+
+@allowed([
+    'DeployIfNotExists'
+    'Disabled'
+])
+param effectDefaultValue string = 'DeployIfNotExists'
+
+param attestationEndpointDefaultValue string = ''
+
+
+var parameters = {
+    effect: {
+        type: 'String'
+        allowedValues: [
+            'DeployIfNotExists'
+            'Disabled'
+        ]
+        defaultValue: 'DeployIfNotExists'
+    }
+    attestationEndpoint: {
+        type: 'String'
+        defaultValue: ''
+    }
+}
+var policyRule = {
+    if: {
+        allOf: [
+            {
+                field: 'type'
+                equals: 'Microsoft.Compute/virtualMachineScaleSets'
+            }
+            {
+                field: 'Microsoft.Compute/virtualMachineScaleSets/virtualMachineProfile.securityProfile.securityType'
+                equals: 'TrustedLaunch'
+            }
+            {
+                field: 'Microsoft.Compute/virtualMachineScaleSets/virtualMachineProfile.securityProfile.uefiSettings'
+                exists: 'true'
+            }
+            {
+                field: 'Microsoft.Compute/virtualMachineScaleSets/virtualMachineProfile.securityProfile.uefiSettings.vTpmEnabled'
+                equals: 'true'
+            }
+            {
+                field: 'Microsoft.Compute/virtualMachineScaleSets/virtualMachineProfile.securityProfile.uefiSettings.secureBootEnabled'
+                equals: 'true'
+            }
+            {
+                field: 'Microsoft.Compute/imageid'
+                exists: 'true'
+            }
+        ]
+    }
+    then: {
+        effect: '[parameters(\\'effect\\')]'
+        details: {
+            type: 'Microsoft.Compute/virtualMachineScaleSets/extensions'
+            existenceCondition: {
+                allOf: [
+                    {
+                        field: 'Microsoft.Compute/virtualMachineScaleSets/extensions/publisher'
+                        in: [
+                            'Microsoft.Azure.Security.LinuxAttestation'
+                            'Microsoft.Azure.Security.WindowsAttestation'
+                        ]
+                    }
+                    {
+                        field: 'Microsoft.Compute/virtualMachineScaleSets/extensions/type'
+                        equals: 'GuestAttestation'
+                    }
+                    {
+                        field: 'Microsoft.Compute/virtualMachineScaleSets/extensions/provisioningState'
+                        in: [
+                            'Succeeded'
+                            'Provisioning succeeded'
+                        ]
+                    }
+                ]
+            }
+            roleDefinitionIds: [
+                '/providers/microsoft.authorization/roleDefinitions/acdd72a7-3385-48ef-bd42-f606fba81ae7'
+                '/providers/microsoft.authorization/roleDefinitions/9980e02c-c2be-4d73-94e8-173b1dc7cf3c'
+            ]
+            deployment: {
+                properties: {
+                    mode: 'incremental'
+                    parameters: {
+                        vmName: {
+                            value: '[field(\\'name\\')]'
+                        }
+                        location: {
+                            value: '[field(\\'location\\')]'
+                        }
+                        imageId: {
+                            value: '[field(\\'Microsoft.Compute/imageid\\')]'
+                        }
+                        attestationEndpoint: {
+                            value: '[parameters(\\'attestationEndpoint\\')]'
+                        }
+                    }
+                    template: {
+                        $schema: 'http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#'
+                        contentVersion: '1.0.0.0'
+                        parameters: {
+                            vmName: '@{type=string}'
+                            location: '@{type=string}'
+                            imageId: '@{type=string}'
+                            attestationEndpoint: '@{type=string}'
+                        }
+                        variables: {
+                            extensionName: 'GuestAttestation'
+                            extensionPublisherPrefix: 'Microsoft.Azure.Security.'
+                            extensionPublisherSuffix: 'Attestation'
+                            extensionVersion: '1.0'
+                            maaTenantName: 'GuestAttestation'
+                            ascReportingEndpoint: ''
+                        }
+                        resources: [
+                            '@{type=Microsoft.Compute/virtualMachineScaleSets/extensions; apiVersion=2018-10-01; name=[concat(parameters(\\'vmName\\'), \\'/\\', variables(\\'extensionName\\'))]; location=[parameters(\\'location\\')]; properties=}'
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}
+
+resource policy_definition 'Microsoft.Authorization/policyDefinitions@2021-06-01' = {
+    name: '009259b0-12e8-42c9-94e7-7af86aa58d13'
+    properties: {
+        description: 'Configure VMSS created with Shared Image Gallery images to automatically install the Guest Attestation extension to allow Azure Security Center to proactively attest and monitor the boot integrity. Boot integrity is attested via Remote Attestation.'
+        displayName: '[Preview]: Configure VMSS created with Shared Image Gallery images to install the Guest Attestation extension'
+        mode: 'Indexed'
+        parameters: parameters
+        policyRule: policyRule
+        policyType: 'BuiltIn'
+    }
+}
+
+
+output ID string = policy_definition.id
+output displayName string = policy_definition.properties.displayName
+"""
+        print(generate_bicep_definition(json.loads(test_definition_json)))
+        Self.maxDiff = None
+        Self.assertEqual( generate_bicep_definition(json.loads(test_definition_json)), expected_output )

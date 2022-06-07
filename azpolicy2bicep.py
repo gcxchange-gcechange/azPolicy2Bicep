@@ -1,4 +1,4 @@
-from helpers import translate_to_bicep
+from helpers import translate_to_bicep, indentString
 
 def _translate_definition(az_dump_dict: dict) -> dict:
     bicep_keys = ['Description', 'DisplayName', 'Mode', 'PolicyRule']
@@ -17,27 +17,43 @@ def _translate_definition(az_dump_dict: dict) -> dict:
 
     return bicep_dict
 
+def _azpolicy_type_to_bicep(az_type: str) -> str:
+    type_map = {
+        'String': 'string',
+        'DateTime': 'string',
+        'Float': 'string',
+        'Integer': 'int',
+        'Boolean': 'bool',
+        'Array': 'array',
+        'Object': 'object'
+    }
+    return type_map[az_type]
+
 def generate_parameter_section(definition_dict: dict) -> dict:
     if definition_dict['Properties']['Parameters'] is None:
         return {'policy_parameters': '', 'bicep_params': ''}
 
     policy_parameters = ''
-
     parameter_template = """
     {name}: {{
-        type: {type}{default_value_string}{allowed_values_string}
-    }}
-"""
+        type: {type}{allowed_values_string}{default_value_string}
+    }}"""
 
-    bicep_params = ""
+    bicep_params = ''
     # splitting these up because allowed values and default value are optional
-    bicep_param_allowed_tmeplate = """@allowed({allowedValuesBicepArray})"""
-    bicep_param_tmeplate = """param {parameter_name} {type_bicep} = {defaultValueBicep}"""
+    bicep_param_allowed_tmeplate = """\n@allowed({allowedValuesBicepArray})"""
+    bicep_param_tmeplate = """\nparam {parameter_name} {type_bicep} = {defaultValueBicep}\n"""
 
     for name, parameter in definition_dict['Properties']['Parameters'].items():
-        default_value_string = f"\ndefaultValue: {translate_to_bicep(parameter['defaultValue'])}" if parameter.get('defaultValue') is not None else ''
-        allowed_values_string = f"\nallowedValues: {translate_to_bicep(parameter['allowedValues'])}" if parameter.get('allowedValues') is not None else ''
+        default_value_string = indentString(f"\ndefaultValue: {translate_to_bicep(parameter['defaultValue'])}", indent_level=2, indent_first_line=False) if parameter.get('defaultValue') is not None else ''
+        allowed_values_string = indentString(f"\nallowedValues: {translate_to_bicep(parameter['allowedValues'])}", indent_level=2, indent_first_line=False) if parameter.get('allowedValues') is not None else ''
         policy_parameters += parameter_template.format(name=name,type=translate_to_bicep(parameter['type']), default_value_string=default_value_string, allowed_values_string=allowed_values_string)
+
+        bicep_params += bicep_param_allowed_tmeplate.format(allowedValuesBicepArray=translate_to_bicep(parameter['allowedValues'])) if parameter.get('allowedValues') is not None and parameter.get('defaultValue') is not None else ''
+        bicep_params += bicep_param_tmeplate.format(parameter_name=f"{name}DefaultValue", type_bicep=_azpolicy_type_to_bicep(parameter['type']), defaultValueBicep=translate_to_bicep(parameter['defaultValue'])) if parameter.get('defaultValue') is not None else ''
+    
+    if policy_parameters:
+        policy_parameters += '\n'   # so the overall policy object closing bracket is on a new line
 
     return {'policy_parameters': policy_parameters, 'bicep_params': bicep_params}
 
