@@ -384,6 +384,4 @@ resource policy_definition 'Microsoft.Authorization/policyDefinitions@2021-06-01
 output ID string = policy_definition.id
 output displayName string = policy_definition.properties.displayName
 """
-        print(generate_bicep_definition(json.loads(test_definition_json)))
-        Self.maxDiff = None
         Self.assertEqual( generate_bicep_definition(json.loads(test_definition_json)), expected_output )
