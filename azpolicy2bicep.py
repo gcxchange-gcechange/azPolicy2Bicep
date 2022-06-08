@@ -53,7 +53,7 @@ def generate_parameter_section(definition_dict: dict) -> dict:
     bicep_param_tmeplate = """\nparam {parameter_name} {type_bicep} = {defaultValueBicep}\n"""
 
     for name, parameter in definition_dict['Properties']['Parameters'].items():
-        default_value_string = indentString(f"\ndefaultValue: {translate_to_bicep(parameter['defaultValue'])}", indent_level=2, indent_first_line=False) if parameter.get('defaultValue') is not None else ''
+        default_value_string = indentString(f"\ndefaultValue: {name}DefaultValue", indent_level=2, indent_first_line=False) if parameter.get('defaultValue') is not None else ''
         allowed_values_string = indentString(f"\nallowedValues: {translate_to_bicep(parameter['allowedValues'])}", indent_level=2, indent_first_line=False) if parameter.get('allowedValues') is not None else ''
         policy_parameters += parameter_template.format(name=name,type=translate_to_bicep(parameter['type']), default_value_string=default_value_string, allowed_values_string=allowed_values_string)
 

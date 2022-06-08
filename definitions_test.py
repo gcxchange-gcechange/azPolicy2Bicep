@@ -259,11 +259,11 @@ var parameters = {
             'DeployIfNotExists'
             'Disabled'
         ]
-        defaultValue: 'DeployIfNotExists'
+        defaultValue: effectDefaultValue
     }
     attestationEndpoint: {
         type: 'String'
-        defaultValue: ''
+        defaultValue: attestationEndpointDefaultValue
     }
 }
 var policyRule = {
@@ -479,8 +479,10 @@ output displayName string = policy_definition.properties.displayName
         expected_output_directory = 'testing_directory'
         expected_files_list = ['Deny-VM-Creation.bicep', 'Deny-VM-Creation2.bicep']
 
-        for file in listdir(expected_output_directory):
-          remove(f"{expected_output_directory}/{file}")
+        # clean up test dir for this test
+        if expected_output_directory in listdir('./'):
+          for file in listdir(expected_output_directory):
+            remove(f"{expected_output_directory}/{file}")
 
         process_policy_definitions(test_definitions_dump, expected_output_directory)
 
