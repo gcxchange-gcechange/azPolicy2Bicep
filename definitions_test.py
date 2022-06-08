@@ -1,7 +1,8 @@
 import unittest
 import json
+from os import listdir, remove
 
-from azpolicy2bicep import generate_bicep_definition
+from azpolicy2bicep import generate_bicep_definition, process_policy_definitions
 
 
 class TestPolicyDefinitions(unittest.TestCase):
@@ -385,3 +386,103 @@ output ID string = policy_definition.id
 output displayName string = policy_definition.properties.displayName
 """
         Self.assertEqual( generate_bicep_definition(json.loads(test_definition_json)), expected_output )
+
+### not quite an end-to-end test, mainly concerned with the files being created / written properly
+    def test_write_definition_files(Self):
+        test_definitions_dump = """[
+  {
+    "Name": "Deny-VM-Creation",
+    "ResourceId": "/subscriptions/123456-aasfoidj/providers/Microsoft.Authorization/policyDefinitions/Deny-VM-Creation",
+    "ResourceName": "Deny-VM-Creation",
+    "ResourceType": "Microsoft.Authorization/policyDefinitions",
+    "SubscriptionId": "123456-aasfoidj",
+    "Properties": {
+      "Description": "Deny VM Creation - v2",
+      "DisplayName": "Deny VM Creation test",
+      "Metadata": {
+        "createdBy": null,
+        "createdOn": null,
+        "updatedBy": null,
+        "updatedOn": null
+      },
+      "Mode": "All",
+      "Parameters": {
+        "effect": {
+          "allowedValues": [
+            "AuditIfNotExists",
+            "Disabled"
+          ],
+          "defaultValue": "AuditIfNotExists",
+          "metadata": {
+            "additionalProperties": null,
+            "assignPermissions": null,
+            "description": "Enable or disable the execution of the policy",
+            "displayName": "Effect",
+            "strongType": null
+          },
+          "type": "String"
+        }
+      },
+      "PolicyRule": {
+        "if": {
+          "allOf": [
+            {
+              "field": "type",
+              "equals": "Microsoft.Compute/virtualMachines"
+            }
+          ]
+        },
+        "then": {
+          "effect": "[parameters('effect')]"
+        }
+      },
+      "PolicyType": 1
+    },
+    "PolicyDefinitionId": "/subscriptions/123456-aasfoidj/providers/Microsoft.Authorization/policyDefinitions/Deny-VM-Creation"
+  },
+  {
+    "Name": "Deny-VM-Creation2",
+    "ResourceId": "/subscriptions/123456-aasfoidj/providers/Microsoft.Authorization/policyDefinitions/Deny-VM-Creation2",
+    "ResourceName": "Deny-VM-Creation2",
+    "ResourceType": "Microsoft.Authorization/policyDefinitions",
+    "SubscriptionId": "123456-aasfoidj",
+    "Properties": {
+      "Description": "Deny VM Creation2 - v2",
+      "DisplayName": "Deny VM Creation test2",
+      "Metadata": {
+        "createdBy": null,
+        "createdOn": null,
+        "updatedBy": null,
+        "updatedOn": null
+      },
+      "Mode": "All",
+      "Parameters": {},
+      "PolicyRule": {
+        "if": {
+          "allOf": [
+            {
+              "field": "type",
+              "equals": "Microsoft.Compute/virtualMachines"
+            }
+          ]
+        },
+        "then": {
+          "effect": "deny"
+        }
+      },
+      "PolicyType": 1
+    },
+    "PolicyDefinitionId": "/subscriptions/123456-aasfoidj/providers/Microsoft.Authorization/policyDefinitions/Deny-VM-Creation2"
+  }
+]
+"""
+        expected_output_directory = 'testing_directory'
+        expected_files_list = ['Deny-VM-Creation.bicep', 'Deny-VM-Creation2.bicep']
+
+        for file in listdir(expected_output_directory):
+          remove(f"{expected_output_directory}/{file}")
+
+        process_policy_definitions(test_definitions_dump, expected_output_directory)
+
+        Self.assertEqual(listdir(expected_output_directory), expected_files_list)
+        

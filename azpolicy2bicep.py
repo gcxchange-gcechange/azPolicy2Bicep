@@ -1,4 +1,12 @@
+import json
+from pathlib import Path
+
 from helpers import translate_to_bicep, indentString
+
+def _write_bicep_file(file_path, file_contents) -> None:
+    with open(file_path, 'w') as bicep_file:
+        bicep_file.write(file_contents)
+        return
 
 def _translate_definition(az_dump_dict: dict) -> dict:
     bicep_keys = ['Description', 'DisplayName', 'Mode', 'PolicyRule']
@@ -84,3 +92,22 @@ output displayName string = policy_definition.properties.displayName
 """
 
     return bicep_policy_template.format( **_translate_definition(definition_dict), **policies )
+
+def process_policy_definitions(definitions_file, output_dir = "policies/definitions") -> None:
+    Path(output_dir).mkdir(parents=True, exist_ok=True)
+
+    definitions_json = json.loads(definitions_file)
+    
+    for definition in definitions_json:
+        definition_bicep = generate_bicep_definition(definition)
+        file_path = f"{output_dir}/{definition['Name']}.bicep"
+        _write_bicep_file(file_path, definition_bicep)
+
+    return
+
+
+def main():
+    return
+
+if __name__ == "__main__": 
+    main()
