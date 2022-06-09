@@ -1,12 +1,19 @@
 import json
+from sys import argv
 from pathlib import Path
 
 from helpers import translate_to_bicep, indentString
 
-def _write_bicep_file(file_path, file_contents) -> None:
+def _load_json_dump(file_name: str) -> dict:
+    json_dict = {}
+    with open(file_name, 'r') as definitions_file:
+        json_dict = json.load(definitions_file)
+    return json_dict
+
+def _write_bicep_file(file_path: str, file_contents: str) -> None:
     with open(file_path, 'w') as bicep_file:
         bicep_file.write(file_contents)
-        return
+    return
 
 def _translate_definition(az_dump_dict: dict) -> dict:
     bicep_keys = ['Description', 'DisplayName', 'Mode', 'PolicyRule']
@@ -93,12 +100,10 @@ output displayName string = policy_definition.properties.displayName
 
     return bicep_policy_template.format( **_translate_definition(definition_dict), **policies )
 
-def process_policy_definitions(definitions_file, output_dir = "policies/definitions") -> None:
+def process_policy_definitions(definitions_file: dict, output_dir: str = "./policies/definitions") -> None:
     Path(output_dir).mkdir(parents=True, exist_ok=True)
-
-    definitions_json = json.loads(definitions_file)
     
-    for definition in definitions_json:
+    for definition in definitions_file:
         definition_bicep = generate_bicep_definition(definition)
         file_path = f"{output_dir}/{definition['Name']}.bicep"
         _write_bicep_file(file_path, definition_bicep)
@@ -107,6 +112,12 @@ def process_policy_definitions(definitions_file, output_dir = "policies/definiti
 
 
 def main():
+    definitions_file = argv[1]
+    root_output_directory = argv[-1]
+
+    definitions_directory = f"{root_output_directory}/definitions"
+    process_policy_definitions(_load_json_dump(definitions_file), definitions_directory)
+
     return
 
 if __name__ == "__main__": 
