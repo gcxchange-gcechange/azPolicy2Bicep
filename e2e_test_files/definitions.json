@@ -1,0 +1,86 @@
+[
+    {
+      "Name": "Deny-VM-Creation",
+      "ResourceId": "/subscriptions/123456-aasfoidj/providers/Microsoft.Authorization/policyDefinitions/Deny-VM-Creation",
+      "ResourceName": "Deny-VM-Creation",
+      "ResourceType": "Microsoft.Authorization/policyDefinitions",
+      "SubscriptionId": "123456-aasfoidj",
+      "Properties": {
+        "Description": "Deny VM Creation - v2",
+        "DisplayName": "Deny VM Creation test",
+        "Metadata": {
+          "createdBy": null,
+          "createdOn": null,
+          "updatedBy": null,
+          "updatedOn": null
+        },
+        "Mode": "All",
+        "Parameters": {
+          "effect": {
+            "allowedValues": [
+              "AuditIfNotExists",
+              "Disabled"
+            ],
+            "defaultValue": "AuditIfNotExists",
+            "metadata": {
+              "additionalProperties": null,
+              "assignPermissions": null,
+              "description": "Enable or disable the execution of the policy",
+              "displayName": "Effect",
+              "strongType": null
+            },
+            "type": "String"
+          }
+        },
+        "PolicyRule": {
+          "if": {
+            "allOf": [
+              {
+                "field": "type",
+                "equals": "Microsoft.Compute/virtualMachines"
+              }
+            ]
+          },
+          "then": {
+            "effect": "[parameters('effect')]"
+          }
+        },
+        "PolicyType": 1
+      },
+      "PolicyDefinitionId": "/subscriptions/123456-aasfoidj/providers/Microsoft.Authorization/policyDefinitions/Deny-VM-Creation"
+    },
+    {
+      "Name": "Deny-VM-Creation2",
+      "ResourceId": "/subscriptions/123456-aasfoidj/providers/Microsoft.Authorization/policyDefinitions/Deny-VM-Creation2",
+      "ResourceName": "Deny-VM-Creation2",
+      "ResourceType": "Microsoft.Authorization/policyDefinitions",
+      "SubscriptionId": "123456-aasfoidj",
+      "Properties": {
+        "Description": "Deny VM Creation2 - v2",
+        "DisplayName": "Deny VM Creation test2",
+        "Metadata": {
+          "createdBy": null,
+          "createdOn": null,
+          "updatedBy": null,
+          "updatedOn": null
+        },
+        "Mode": "All",
+        "Parameters": {},
+        "PolicyRule": {
+          "if": {
+            "allOf": [
+              {
+                "field": "type",
+                "equals": "Microsoft.Compute/virtualMachines"
+              }
+            ]
+          },
+          "then": {
+            "effect": "deny"
+          }
+        },
+        "PolicyType": 1
+      },
+      "PolicyDefinitionId": "/subscriptions/123456-aasfoidj/providers/Microsoft.Authorization/policyDefinitions/Deny-VM-Creation2"
+    }
+  ]
