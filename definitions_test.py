@@ -481,10 +481,9 @@ output displayName string = policy_definition.properties.displayName
 
         # clean up test dir for this test
         if expected_output_directory in listdir('./'):
-          for file in listdir(expected_output_directory):
-            remove(f"{expected_output_directory}/{file}")
+            for file in listdir(expected_output_directory):
+                remove(f"{expected_output_directory}/{file}")
 
         process_policy_definitions(json.loads(test_definitions_dump), expected_output_directory)
 
         Self.assertEqual(listdir(expected_output_directory), expected_files_list)
-        

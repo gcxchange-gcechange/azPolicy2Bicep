@@ -28,7 +28,7 @@ def translate_to_bicep(not_bicep: str, type_given: str = '', nested: bool = Fals
 
 
 def indent(indent_level: int = 1) -> str:
-    return "    " * indent_level
+    return " " * 4 * indent_level
 
 def indentString(input_string: str, indent_level: int = 1, indent_first_line: bool = True) -> str:
     lines = input_string.splitlines()
