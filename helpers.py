@@ -38,3 +38,15 @@ def indentString(input_string: str, indent_level: int = 1, indent_first_line: bo
         indented_string = ''.join([indented_string, '\n', indent(indent_level), line])
 
     return indented_string
+
+def detect_pwsh_dump(policy_dump) -> bool:
+    # will use the fact that the name field is present in all dumps 
+    # and is capitalize in powershell dumps as most keys are
+    
+    if isinstance(policy_dump, list) and 'Name' in policy_dump[0].keys():
+        return True
+    
+    if isinstance(policy_dump, dict) and 'Name' in policy_dump.keys():
+        return True
+
+    return False

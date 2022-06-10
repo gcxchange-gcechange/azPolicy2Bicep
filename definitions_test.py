@@ -487,3 +487,7 @@ output displayName string = policy_definition.properties.displayName
         process_policy_definitions(json.loads(test_definitions_dump), expected_output_directory)
 
         Self.assertEqual(listdir(expected_output_directory), expected_files_list)
+
+
+if __name__ == '__main__':
+    unittest.main()

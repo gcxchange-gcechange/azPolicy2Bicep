@@ -1,7 +1,7 @@
 import unittest
 import json
 
-from helpers import translate_to_bicep, indent, indentString
+from helpers import translate_to_bicep, indent, indentString, detect_pwsh_dump
 
 # need to be able to handle: 
 #   string, array, object, boolean, integer, float, or datetime
@@ -116,6 +116,43 @@ class TestIndent(unittest.TestCase):
         ]"""
         Self.assertEqual( indentString(test_input, indent_level=indent_level), expected_output )
 
+    def test_detect_powershell_dump(Self):
+        test_input = """{
+    "Name": "Deny-VM-Creation2",
+    "ResourceId": "/subscriptions/123456-aasfoidj/providers/Microsoft.Authorization/policyDefinitions/Deny-VM-Creation2",
+    "ResourceName": "Deny-VM-Creation2",
+    "ResourceType": "Microsoft.Authorization/policyDefinitions",
+    "SubscriptionId": "123456-aasfoidj",
+    "Properties": {
+      "Description": "Deny VM Creation2 - v2",
+      "DisplayName": "Deny VM Creation test2",
+      "Metadata": {
+        "createdBy": null,
+        "createdOn": null,
+        "updatedBy": null,
+        "updatedOn": null
+      },
+      "Mode": "All",
+      "Parameters": {},
+      "PolicyRule": {
+        "if": {
+          "allOf": [
+            {
+              "field": "type",
+              "equals": "Microsoft.Compute/virtualMachines"
+            }
+          ]
+        },
+        "then": {
+          "effect": "deny"
+        }
+      },
+      "PolicyType": 1
+    },
+    "PolicyDefinitionId": "/subscriptions/123456-aasfoidj/providers/Microsoft.Authorization/policyDefinitions/Deny-VM-Creation2"
+  }"""
+        expected_output = 1
+        Self.assertEqual( detect_pwsh_dump(json.loads(test_input)), expected_output )
 
 if __name__ == '__main__':
     unittest.main()
