@@ -486,7 +486,7 @@ output displayName string = policy_definition.properties.displayName
 
         process_policy_definitions(json.loads(test_definitions_dump), expected_output_directory)
 
-        Self.assertEqual(listdir(expected_output_directory), expected_files_list)
+        Self.assertEqual(listdir(expected_output_directory).sort(), expected_files_list.sort())
 
 
 if __name__ == '__main__':

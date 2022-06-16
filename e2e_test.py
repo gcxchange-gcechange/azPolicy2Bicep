@@ -25,7 +25,7 @@ class TestE2E(unittest.TestCase):
         run(['python3', 'azpolicy2bicep.py', test_input_files['definitions'], output_directory])
 
         for dir, expected_files in expected_files_dict.items():
-            Self.assertEqual(listdir(f"{output_directory}/{dir}"), expected_files)
+            Self.assertEqual(listdir(f"{output_directory}/{dir}").sort(), expected_files.sort())
             for bicep_file_name in listdir(f"{output_directory}/{dir}"):
                 with open(f"{output_directory}/{dir}/{bicep_file_name}", 'r') as bicep_file:
                     Self.assertEqual(bicep_file.read(), Self._get_expected_file_string(dir, bicep_file_name))
