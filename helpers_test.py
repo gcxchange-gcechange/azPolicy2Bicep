@@ -79,7 +79,38 @@ class TestBicepTranslation(unittest.TestCase):
         Self.assertEqual( translate_to_bicep(testInput, "Object"), expectedOutput )
         Self.assertEqual( translate_to_bicep(testInput), expectedOutput )
 
+    def test_empty_object_and_array(Self):
+        testInput = json.loads("""{
+    "listOfAllowedLocations": {
+        "value": [],
+        "another": {}
+    }
+}""")
+        expectedOutput = """{
+    listOfAllowedLocations: {
+        value: []
+        another: {}
+    }
+}"""
+        Self.assertEqual( translate_to_bicep(testInput, "Object"), expectedOutput )
+        Self.assertEqual( translate_to_bicep(testInput), expectedOutput )
 
+    def test_template_output(Self):
+        testInput = json.loads("""{
+    "listOfAllowedLocations": {
+        "value": [],
+        "another": {}
+    }
+}""")
+        testInput['listOfAllowedLocations']['value'] = "{test}"
+        expectedOutput = """{{
+    listOfAllowedLocations: {{
+        value: {test}
+        another: {{}}
+    }}
+}}"""
+        Self.assertEqual( translate_to_bicep(testInput, "Object", template=['{test}']), expectedOutput )
+        Self.assertEqual( translate_to_bicep(testInput, template=['{test}']), expectedOutput )
 
 class TestIndent(unittest.TestCase):
 

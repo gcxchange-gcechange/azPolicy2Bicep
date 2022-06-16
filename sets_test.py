@@ -2,7 +2,7 @@ import unittest
 import json
 from os import listdir, remove
 
-from azpolicy2bicep import generate_bicep_policy_set
+from azpolicy2bicep import generate_bicep_policy_set, generate_set_policy_def_section
 
 
 class TestPolicyPolicySets(unittest.TestCase):
@@ -74,32 +74,31 @@ var policyDefinitionGroups = [
         displayName: 'Custom Controls'
     }
 ]
-
 var policyDefinitions = [
     {
+        policyDefinitionReferenceId: toLower(replace(Deny-VM-Creation.outputs.displayName, ' ', '-'))
+        policyDefinitionId: Deny-VM-Creation.outputs.ID
+        parameters: {}
         groupNames: [
             'Custom'
         ]
-        policyDefinitionId: denyVMs.outputs.ID
-        policyDefinitionReferenceId: toLower(replace(denyVMs.outputs.displayName, ' ', '-'))
-        parameters: {}
     }
     {
-        groupNames: [
-            'Custom'
-        ]
+        policyDefinitionReferenceId: 'restrict-to-canada-central-and-canada-east-regions-for-resources'
         policyDefinitionId: '/providers/Microsoft.Authorization/policyDefinitions/e56962a6-4747-49cd-b67b-bf8b01975c4c'
-        policyDefinitionReferenceId: toLower(replace('Restrict to Canada Central and Canada East regions for Resources', ' ', '-'))
         parameters: {
             listOfAllowedLocations: {
                 value: listOfAllowedLocations
             }
         }
+        groupNames: [
+            'Custom'
+        ]
     }
 ]
 
 
-resource customPolicySet 'Microsoft.Authorization/policySetDefinitions@2020-03-01' = {
+resource policySet 'Microsoft.Authorization/policySetDefinitions@2020-03-01' = {
     name: 'custom'
     properties: {
         displayName: 'Custom Set'
@@ -110,11 +109,13 @@ resource customPolicySet 'Microsoft.Authorization/policySetDefinitions@2020-03-0
 
 
 // definitions from modules
-module denyVMs '../definitions/Deny-VM-Creation.bicep' = {
-    name: 'denyVM'
+module Deny-VM-Creation '../definitions/Deny-VM-Creation.bicep' = {
+    name: 'Deny-VM-Creation'
 }
 
 
 output ID string = customPolicySet.id
 """
+        
+        Self.maxDiff = None
         Self.assertEqual( generate_bicep_policy_set(json.loads(test_policy_set_json)), expected_output )
