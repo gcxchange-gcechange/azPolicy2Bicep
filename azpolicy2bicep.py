@@ -146,19 +146,20 @@ def generate_set_parameter_section(definition_dict: dict) -> str:
     bicep_param_tmeplate = """\nparam {parameter_name} {type_bicep} = {valueBicep}\n"""
 
     for policy in definition_dict['Properties']['PolicyDefinitions']:
+        policyDefinitionId = policy['policyDefinitionId'].split('/')
         if policy['parameters'] is None:
             continue
 
-        for name, parameter in policy['parameters'].items():    # TODO: find a good way to make bicep parameters unique in case of multiple policies with the same parameter names
+        for name, parameter in policy['parameters'].items():
             bicep_params += bicep_param_allowed_tmeplate.format(allowedValuesBicepArray=translate_to_bicep(parameter['allowedValues'])) if parameter.get('allowedValues') is not None and parameter.get('defaultValue') is not None else ''
-            bicep_params += bicep_param_tmeplate.format(parameter_name=f"{name}", type_bicep=_python_type_to_bicep(type(parameter['value'])), valueBicep=translate_to_bicep(parameter['value']))
+            bicep_params += bicep_param_tmeplate.format(parameter_name=f"{policyDefinitionId[-1].replace('-', '')}_{name}", type_bicep=_python_type_to_bicep(type(parameter['value'])), valueBicep=translate_to_bicep(parameter['value']))
     
     return bicep_params
 
-def generate_set_policy_def_section(definition_dict: dict) -> str:
+def generate_set_policy_def_section(set_dict: dict) -> str:
     policy_set_definitions = []
     
-    for policy in definition_dict['Properties']['PolicyDefinitions']:
+    for policy in set_dict['Properties']['PolicyDefinitions']:
         policy_set_definition = policy.copy()
         template_strings = []
         format_strings = {}
@@ -166,32 +167,34 @@ def generate_set_policy_def_section(definition_dict: dict) -> str:
         policyDefinitionId = policy_set_definition['policyDefinitionId'].split('/')
         if policyDefinitionId[1] == 'subscriptions':    # custom definition
             policy_set_definition['policyDefinitionId'] = "{policyDefinitionId}"
-            format_strings['policyDefinitionId'] = f"{policyDefinitionId[-1]}.outputs.ID"
+            format_strings['policyDefinitionId'] = f"{policyDefinitionId[-1].replace('-', '_')}.outputs.ID"
             template_strings.append(policy_set_definition['policyDefinitionId'])
+
             policy_set_definition['policyDefinitionReferenceId'] = "{policyDefinitionReferenceId}"
-            format_strings['policyDefinitionReferenceId'] = f"toLower(replace({policyDefinitionId[-1]}.outputs.displayName, ' ', '-'))"
+            format_strings['policyDefinitionReferenceId'] = f"toLower(replace({policyDefinitionId[-1].replace('-', '_')}.outputs.displayName, ' ', '-'))"
             template_strings.append(policy_set_definition['policyDefinitionReferenceId'])
 
         if policy['parameters'] is not None:
             for name in policy['parameters'].keys():
-                policy_set_definition['parameters'][name]['value'] = f"{{{policyDefinitionId[-1]}{name}}}"
-                format_strings[f"{policyDefinitionId[-1]}{name}"] = name
+                policy_set_definition['parameters'][name]['value'] = f"{{{policyDefinitionId[-1].replace('-', '')}_{name}}}"
+                format_strings[f"{policyDefinitionId[-1].replace('-', '')}_{name}"] = f"{policyDefinitionId[-1].replace('-', '')}_{name}"
                 template_strings.append(policy_set_definition['parameters'][name]['value'])
         policy_set_definitions.append( indent() + translate_to_bicep(policy_set_definition, nested=True, template=template_strings).format_map(format_strings))
+
     return '[\n' + '\n'.join(policy_set_definitions) + '\n]'
 
-def generate_set_modules_section(definition_dict: dict) -> str:
+def generate_set_modules_section(set_dict: dict) -> str:
     bicep_modules_string = ''
-    bicep_module_template = """module {name} '../definitions/{name}.bicep' = {{
+    bicep_module_template = """module {name_underscores} '../definitions/{name}.bicep' = {{
     name: '{name}'
 }}"""
 
-    for policy in definition_dict['Properties']['PolicyDefinitions']:
+    for policy in set_dict['Properties']['PolicyDefinitions']:
         policyDefinitionId = policy['policyDefinitionId'].split('/')
         if policyDefinitionId[1] == 'providers':    # built-in definition
             continue
 
-        bicep_modules_string += bicep_module_template.format(name=policyDefinitionId[-1])
+        bicep_modules_string += bicep_module_template.format(name=policyDefinitionId[-1], name_underscores=policyDefinitionId[-1].replace('-', '_'))
 
     return bicep_modules_string
 
@@ -219,10 +222,20 @@ resource policySet 'Microsoft.Authorization/policySetDefinitions@2020-03-01' = {
 {definition_modules}
 
 
-output ID string = customPolicySet.id
+output ID string = policySet.id
 """
 
     return bicep_policy_template.format( **_translate_set(set_dict), bicep_params=set_parameters, policyDefinitions=generate_set_policy_def_section(set_dict), definition_modules=generate_set_modules_section(set_dict) )
+
+def process_policy_sets(initiatives_file: dict, output_dir: str = "./policies/initiatives") -> None:
+    Path(output_dir).mkdir(parents=True, exist_ok=True)
+    
+    for set in initiatives_file:
+        set_bicep = generate_bicep_policy_set(set)
+        file_path = f"{output_dir}/{set['Name']}.bicep"
+        _write_bicep_file(file_path, set_bicep)
+
+    return
 
 def main():
     definitions_file = argv[1]
