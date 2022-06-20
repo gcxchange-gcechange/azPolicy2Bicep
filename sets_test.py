@@ -62,11 +62,6 @@ class TestPolicyPolicySets(unittest.TestCase):
 """
         expected_output = """targetScope = 'managementGroup'
 
-param e56962a6474749cdb67bbf8b01975c4c_listOfAllowedLocations array = [
-    'canadacentral'
-    'canadaeast'
-]
-
 
 var policyDefinitionGroups = [
     {
@@ -88,7 +83,10 @@ var policyDefinitions = [
         policyDefinitionId: '/providers/Microsoft.Authorization/policyDefinitions/e56962a6-4747-49cd-b67b-bf8b01975c4c'
         parameters: {
             listOfAllowedLocations: {
-                value: e56962a6474749cdb67bbf8b01975c4c_listOfAllowedLocations
+                value: [
+                    'canadacentral'
+                    'canadaeast'
+                ]
             }
         }
         groupNames: [
@@ -123,59 +121,51 @@ output ID string = policySet.id
 
     def test_write_set_files(Self):
         test_sets_dump = """[
-  {
-    "Name": "custom",
-    "ResourceId": "/subscriptions/123-soasdffpoasifu/providers/Microsoft.Authorization/policySetDefinitions/custom",
-    "ResourceName": "custom",
+{
+    "Name": "06122b01-688c-42a8-af2e-fa97dd39aa3b",
+    "ResourceId": "/providers/Microsoft.Authorization/policySetDefinitions/06122b01-688c-42a8-af2e-fa97dd39aa3b",
+    "ResourceName": "06122b01-688c-42a8-af2e-fa97dd39aa3b",
     "ResourceType": "Microsoft.Authorization/policySetDefinitions",
-    "SubscriptionId": "123-soasdffpoasifu",
-    "PolicySetDefinitionId": "/subscriptions/123-soasdffpoasifu/providers/Microsoft.Authorization/policySetDefinitions/custom",
+    "SubscriptionId": null,
+    "PolicySetDefinitionId": "/providers/Microsoft.Authorization/policySetDefinitions/06122b01-688c-42a8-af2e-fa97dd39aa3b",
     "Properties": {
-      "Description": null,
-      "DisplayName": "Custom Set",
+      "Description": "This initiative deploys the policy requirements and audits Windows virtual machines in which the Administrators group does not contain only the specified members. For more information on Guest Configuration policies, please visit https://aka.ms/gcpol",
+      "DisplayName": "[Deprecated]: Audit Windows VMs in which the Administrators group does not contain only the specified members",
       "Metadata": {
-        "createdBy": null,
-        "createdOn": null,
-        "updatedBy": null,
-        "updatedOn": null
+        "version": "1.0.0-deprecated",
+        "category": "Guest Configuration",
+        "deprecated": true
       },
-      "Parameters": null,
-      "PolicyDefinitionGroups": [
-        {
-          "name": "Custom",
-          "displayName": "Custom Controls"
+      "Parameters": {
+        "Members": {
+          "type": "String",
+          "metadata": {
+            "displayName": "Members",
+            "description": "A semicolon-separated list of all the expected members of the Administrators local group. Ex: Administrator; myUser1; myUser2"
+          }
         }
-      ],
+      },
+      "PolicyDefinitionGroups": null,
       "PolicyDefinitions": [
         {
-          "policyDefinitionReferenceId": "deny-vm-creation-test",
-          "policyDefinitionId": "/subscriptions/123-soasdffpoasifu/providers/Microsoft.Authorization/policyDefinitions/Deny-VM-Creation",
-          "parameters": {},
-          "groupNames": [
-            "Custom"
-          ]
+          "policyDefinitionReferenceId": "Deploy_AdministratorsGroupMembers",
+          "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/b821191b-3a12-44bc-9c38-212138a29ff3",
+          "parameters": {
+            "Members": {
+              "value": "[parameters('Members')]"
+            }
+          }
         },
         {
-          "policyDefinitionReferenceId": "restrict-to-canada-central-and-canada-east-regions-for-resources",
-          "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/e56962a6-4747-49cd-b67b-bf8b01975c4c",
-          "parameters": {
-            "listOfAllowedLocations": {
-              "value": [
-                "canadacentral",
-                "canadaeast"
-              ]
-            }
-          },
-          "groupNames": [
-            "Custom"
-          ]
+          "policyDefinitionReferenceId": "Audit_AdministratorsGroupMembers",
+          "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/cc7cda28-f867-4311-8497-a526129a8d19"
         }
       ],
-      "PolicyType": 1
+      "PolicyType": 2
     }
   },
   {
-    "Name": "custom2",
+    "Name": "custom",
     "ResourceId": "/subscriptions/123-soasdffpoasifu/providers/Microsoft.Authorization/policySetDefinitions/custom",
     "ResourceName": "custom",
     "ResourceType": "Microsoft.Authorization/policySetDefinitions",
@@ -228,7 +218,7 @@ output ID string = policySet.id
 ]
 """
         expected_output_directory = 'testing_directory'
-        expected_files_list = ['custom.bicep', 'custom2.bicep']
+        expected_files_list = ['custom.bicep', 'custom2.bicep', '06122b01-688c-42a8-af2e-fa97dd39aa3b.bicep']
 
         # clean up test dir for this test
         if expected_output_directory in listdir('./'):

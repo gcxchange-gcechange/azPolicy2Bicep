@@ -61,6 +61,18 @@ def _azpolicy_type_to_bicep(az_type: str) -> str:
     }
     return type_map[az_type]
 
+def _azpolicy_type_empty(az_type: str):
+    type_map = {
+        'String': '',
+        'DateTime': '',
+        'Float': '',
+        'Integer': '',
+        'Boolean': '',
+        'Array': [],
+        'Object': {}
+    }
+    return type_map[az_type]
+
 def _python_type_to_bicep(value: type) -> str:
     type_map = {
         "<class 'str'>": 'string',
@@ -140,19 +152,17 @@ def process_policy_definitions(definitions_file: dict, output_dir: str = "./poli
 
 
 def generate_set_parameter_section(definition_dict: dict) -> str:
+    if definition_dict['Properties'].get('Parameters') is None:
+        return ''
+
     bicep_params = ''
     # splitting these up because allowed values and default value are optional
     bicep_param_allowed_tmeplate = """\n@allowed({allowedValuesBicepArray})"""
     bicep_param_tmeplate = """\nparam {parameter_name} {type_bicep} = {valueBicep}\n"""
 
-    for policy in definition_dict['Properties']['PolicyDefinitions']:
-        policyDefinitionId = policy['policyDefinitionId'].split('/')
-        if policy['parameters'] is None:
-            continue
-
-        for name, parameter in policy['parameters'].items():
-            bicep_params += bicep_param_allowed_tmeplate.format(allowedValuesBicepArray=translate_to_bicep(parameter['allowedValues'])) if parameter.get('allowedValues') is not None and parameter.get('defaultValue') is not None else ''
-            bicep_params += bicep_param_tmeplate.format(parameter_name=f"{policyDefinitionId[-1].replace('-', '')}_{name}", type_bicep=_python_type_to_bicep(type(parameter['value'])), valueBicep=translate_to_bicep(parameter['value']))
+    for name, parameter in definition_dict['Properties']['Parameters'].items():
+        bicep_params += bicep_param_allowed_tmeplate.format(allowedValuesBicepArray=translate_to_bicep(parameter['allowedValues'])) if parameter.get('allowedValues') is not None and parameter.get('defaultValue') is not None else ''
+        bicep_params += bicep_param_tmeplate.format(parameter_name=f"{name}Default", type_bicep=_azpolicy_type_to_bicep(parameter['type']), valueBicep=parameter.get('defaultValue', _azpolicy_type_empty(parameter['type'])))
     
     return bicep_params
 
@@ -173,13 +183,11 @@ def generate_set_policy_def_section(set_dict: dict) -> str:
             policy_set_definition['policyDefinitionReferenceId'] = "{policyDefinitionReferenceId}"
             format_strings['policyDefinitionReferenceId'] = f"toLower(replace({policyDefinitionId[-1].replace('-', '_')}.outputs.displayName, ' ', '-'))"
             template_strings.append(policy_set_definition['policyDefinitionReferenceId'])
+        
+            policy_set_definitions.append( indent() + translate_to_bicep(policy_set_definition, nested=True, template=template_strings).format_map(format_strings) )
+            continue
 
-        if policy['parameters'] is not None:
-            for name in policy['parameters'].keys():
-                policy_set_definition['parameters'][name]['value'] = f"{{{policyDefinitionId[-1].replace('-', '')}_{name}}}"
-                format_strings[f"{policyDefinitionId[-1].replace('-', '')}_{name}"] = f"{policyDefinitionId[-1].replace('-', '')}_{name}"
-                template_strings.append(policy_set_definition['parameters'][name]['value'])
-        policy_set_definitions.append( indent() + translate_to_bicep(policy_set_definition, nested=True, template=template_strings).format_map(format_strings))
+        policy_set_definitions.append( indent() + translate_to_bicep(policy_set_definition, nested=True) )
 
     return '[\n' + '\n'.join(policy_set_definitions) + '\n]'
 
