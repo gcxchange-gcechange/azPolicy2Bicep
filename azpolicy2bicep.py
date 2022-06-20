@@ -34,6 +34,12 @@ def _translate_definition(az_dump_dict: dict) -> dict:
 
 def _translate_set(az_dump_dict: dict) -> dict:
     bicep_keys = ['Description', 'DisplayName', 'PolicyDefinitions', 'PolicyDefinitionGroups']
+    default_empty = {
+        'Description': '',
+        'DisplayName': '',
+        'PolicyDefinitions': [],
+        'PolicyDefinitionGroups': []
+    }
     bicep_dict = {}
 
     policy_type_map = {
@@ -45,7 +51,7 @@ def _translate_set(az_dump_dict: dict) -> dict:
     bicep_dict['Name'] = translate_to_bicep(az_dump_dict['Name'])
     bicep_dict['PolicyType'] = translate_to_bicep(policy_type_map[az_dump_dict['Properties']['PolicyType']])
     for key in bicep_keys:
-        bicep_dict[key] = translate_to_bicep(az_dump_dict['Properties'][key])
+        bicep_dict[key] = translate_to_bicep(az_dump_dict['Properties'][key]) if az_dump_dict['Properties'].get(key) is not None else default_empty[key]
 
     return bicep_dict
 
@@ -58,18 +64,6 @@ def _azpolicy_type_to_bicep(az_type: str) -> str:
         'Boolean': 'bool',
         'Array': 'array',
         'Object': 'object'
-    }
-    return type_map[az_type]
-
-def _azpolicy_type_empty(az_type: str):
-    type_map = {
-        'String': '',
-        'DateTime': '',
-        'Float': '',
-        'Integer': '',
-        'Boolean': '',
-        'Array': [],
-        'Object': {}
     }
     return type_map[az_type]
 
@@ -151,9 +145,15 @@ def process_policy_definitions(definitions_file: dict, output_dir: str = "./poli
     return
 
 
-def generate_set_parameter_section(definition_dict: dict) -> str:
-    if definition_dict['Properties'].get('Parameters') is None:
-        return ''
+def generate_set_parameter_section(definition_dict: dict) -> dict:
+    if definition_dict['Properties']['Parameters'] is None:
+        return {'set_parameters': '', 'bicep_params': ''}
+
+    set_parameters = ''
+    parameter_template = """
+    {name}: {{
+        type: {type}{allowed_values_string}{default_value_string}
+    }}"""
 
     bicep_params = ''
     # splitting these up because allowed values and default value are optional
@@ -161,10 +161,17 @@ def generate_set_parameter_section(definition_dict: dict) -> str:
     bicep_param_tmeplate = """\nparam {parameter_name} {type_bicep} = {valueBicep}\n"""
 
     for name, parameter in definition_dict['Properties']['Parameters'].items():
+        default_value_string = indentString(f"\ndefaultValue: {name}DefaultValue", indent_level=2, indent_first_line=False) if parameter.get('defaultValue') is not None else ''
+        allowed_values_string = indentString(f"\nallowedValues: {translate_to_bicep(parameter['allowedValues'])}", indent_level=2, indent_first_line=False) if parameter.get('allowedValues') is not None else ''
+        set_parameters += parameter_template.format(name=name,type=translate_to_bicep(parameter['type']), default_value_string=default_value_string, allowed_values_string=allowed_values_string)
+
         bicep_params += bicep_param_allowed_tmeplate.format(allowedValuesBicepArray=translate_to_bicep(parameter['allowedValues'])) if parameter.get('allowedValues') is not None and parameter.get('defaultValue') is not None else ''
-        bicep_params += bicep_param_tmeplate.format(parameter_name=f"{name}Default", type_bicep=_azpolicy_type_to_bicep(parameter['type']), valueBicep=parameter.get('defaultValue', _azpolicy_type_empty(parameter['type'])))
+        bicep_params += bicep_param_tmeplate.format(parameter_name=f"{name}DefaultValue", type_bicep=_azpolicy_type_to_bicep(parameter['type']), valueBicep=translate_to_bicep(parameter['defaultValue'])) if parameter.get('defaultValue') is not None else ''
     
-    return bicep_params
+    if set_parameters:
+        set_parameters += '\n'   # so the overall set parameter object closing bracket is on a new line
+
+    return  {'set_parameters': set_parameters, 'bicep_params': bicep_params}
 
 def generate_set_policy_def_section(set_dict: dict) -> str:
     policy_set_definitions = []
@@ -207,12 +214,13 @@ def generate_set_modules_section(set_dict: dict) -> str:
     return bicep_modules_string
 
 def generate_bicep_policy_set(set_dict: dict) -> str:
-    set_parameters = generate_set_parameter_section(set_dict)
+    parameters_dict = generate_set_parameter_section(set_dict)
 
     bicep_policy_template = """targetScope = 'managementGroup'
 {bicep_params}
 
 var policyDefinitionGroups = {PolicyDefinitionGroups}
+var parameters = {{{setParameters}}}
 var policyDefinitions = {policyDefinitions}
 
 
@@ -220,6 +228,7 @@ resource policySet 'Microsoft.Authorization/policySetDefinitions@2020-03-01' = {
     name: {Name}
     properties: {{
         displayName: {DisplayName}
+        parameters: parameters
         policyDefinitionGroups: policyDefinitionGroups
         policyDefinitions: policyDefinitions
     }}
@@ -233,7 +242,7 @@ resource policySet 'Microsoft.Authorization/policySetDefinitions@2020-03-01' = {
 output ID string = policySet.id
 """
 
-    return bicep_policy_template.format( **_translate_set(set_dict), bicep_params=set_parameters, policyDefinitions=generate_set_policy_def_section(set_dict), definition_modules=generate_set_modules_section(set_dict) )
+    return bicep_policy_template.format( **_translate_set(set_dict), bicep_params=parameters_dict['bicep_params'], setParameters=parameters_dict['set_parameters'], policyDefinitions=generate_set_policy_def_section(set_dict), definition_modules=generate_set_modules_section(set_dict) )
 
 def process_policy_sets(initiatives_file: dict, output_dir: str = "./policies/initiatives") -> None:
     Path(output_dir).mkdir(parents=True, exist_ok=True)
@@ -247,10 +256,13 @@ def process_policy_sets(initiatives_file: dict, output_dir: str = "./policies/in
 
 def main():
     definitions_file = argv[1]
+    initiatives_file = argv[2]
     root_output_directory = argv[-1]
 
     definitions_directory = f"{root_output_directory}/definitions"
+    initiatives_directory = f"{root_output_directory}/initiatives"
     process_policy_definitions(_load_json_dump(definitions_file), definitions_directory)
+    process_policy_sets(_load_json_dump(initiatives_file), initiatives_directory)
 
     return
 

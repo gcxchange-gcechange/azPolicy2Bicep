@@ -69,6 +69,7 @@ var policyDefinitionGroups = [
         displayName: 'Custom Controls'
     }
 ]
+var parameters = {}
 var policyDefinitions = [
     {
         policyDefinitionReferenceId: toLower(replace(Deny_VM_Creation.outputs.displayName, ' ', '-'))
@@ -100,6 +101,7 @@ resource policySet 'Microsoft.Authorization/policySetDefinitions@2020-03-01' = {
     name: 'custom'
     properties: {
         displayName: 'Custom Set'
+        parameters: parameters
         policyDefinitionGroups: policyDefinitionGroups
         policyDefinitions: policyDefinitions
     }
@@ -115,7 +117,6 @@ module Deny_VM_Creation '../definitions/Deny-VM-Creation.bicep' = {
 output ID string = policySet.id
 """
         
-        Self.maxDiff = None
         Self.assertEqual( generate_bicep_policy_set(json.loads(test_policy_set_json)), expected_output )
 
 
