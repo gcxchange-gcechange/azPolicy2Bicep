@@ -79,6 +79,22 @@ def _translate_assignment(az_dump_dict: dict) -> dict:
         bicep_dict['PolicyDefinitionId'] = f"{definition_id_parts[-1].replace('-', '_')}.outputs.ID"
 
     return bicep_dict
+
+def _translate_exemption(az_dump_dict: dict) -> dict:
+    bicep_keys = ['Description', 'DisplayName', 'PolicyAssignmentId', 'ExemptionCategory']
+    default_empty = {
+        'Description': '',
+        'DisplayName': '',
+        'ExemptionCategory': ''
+    }
+    bicep_dict = {}
+
+    bicep_dict['Name'] = translate_to_bicep(az_dump_dict['Name'])
+    for key in bicep_keys:
+        bicep_dict[key] = translate_to_bicep(az_dump_dict['Properties'][key]) if az_dump_dict['Properties'].get(key) is not None else default_empty[key]
+
+    return bicep_dict
+
 def _azpolicy_type_to_bicep(az_type: str) -> str:
     type_map = {
         'String': 'string',
@@ -365,6 +381,24 @@ def process_policy_assignments(assignments_file: dict, output_dir: str = "./poli
         _write_bicep_file(file_path, assignment_bicep)
 
     return
+
+## exemptions
+def generate_bicep_policy_exemption(exemption_dict: dict) -> str:
+    bicep_policy_template = """targetScope = 'managementGroup'
+
+
+resource exemption 'Microsoft.Authorization/policyExemptions@2020-07-01-preview' = {{
+    name: {Name}
+    properties: {{
+        displayName: {DisplayName}
+        description: {Description}
+        policyAssignmentId: {PolicyAssignmentId}
+        exemptionCategory: {ExemptionCategory}
+    }}
+}}
+"""
+
+    return bicep_policy_template.format( **_translate_exemption(exemption_dict) )
 
 def main():
     definitions_file = argv[1]
