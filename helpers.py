@@ -3,7 +3,7 @@
 def translate_to_bicep(not_bicep: str, type_given: str = '', nested: bool = False, template: bool = False) -> str:
     if type(not_bicep) in [int, bool] \
             or type_given.lower() in ['int', 'boolean']:
-        return f"{not_bicep}"
+        return f"{not_bicep}".lower()   # bicep only accepts all-lower-case booleans
 
     if isinstance(not_bicep, str) \
             or type_given.lower() in ['string', 'datetime']:
