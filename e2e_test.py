@@ -355,10 +355,14 @@ resource assignment 'Microsoft.Authorization/policyAssignments@2020-03-01' = {
   name: 'location-VMs'
   properties: {
     displayName: 'Custom set'
-    policyDefinitionId: '/subscriptions/test-123/providers/Microsoft.Authorization/policySetDefinitions/custom'
+    policyDefinitionId: custom.outputs.ID
     parameters: parameters
     enforcementMode: enforcementMode
   }
+}
+
+module custom '../initiatives/custom.bicep' = {
+    name: 'custom'
 }
 """,
                 'SecurityCenterBuiltIn.bicep': """targetScope = 'managementGroup'

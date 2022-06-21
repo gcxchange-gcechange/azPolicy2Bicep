@@ -77,6 +77,64 @@ resource assignment 'Microsoft.Authorization/policyAssignments@2020-03-01' = {
 """
         Self.assertEqual( generate_bicep_policy_assignment(json.loads(test_policy_set_json)), expected_output )
 
+    def test_generate_bicep_custom_policy_assignment(Self):
+        test_policy_set_json = """{
+        "Identity": null,
+        "Location": null,
+        "Name": "location-VMs",
+        "ResourceId": "/subscriptions/test-123/providers/Microsoft.Authorization/policyAssignments/location-VMs",
+        "ResourceName": "location-VMs",
+        "ResourceGroupName": null,
+        "ResourceType": "Microsoft.Authorization/policyAssignments",
+        "SubscriptionId": "test-123",
+        "Sku": null,
+        "PolicyAssignmentId": "/subscriptions/test-123/providers/Microsoft.Authorization/policyAssignments/location-VMs",
+        "Properties": {
+          "Scope": "/subscriptions/test-123",
+          "NotScopes": null,
+          "DisplayName": "Custom set",
+          "Description": null,
+          "Metadata": {
+            "createdBy": null,
+            "createdOn": null,
+            "updatedBy": null,
+            "updatedOn": null
+          },
+          "EnforcementMode": 1,
+          "PolicyDefinitionId": "/subscriptions/test-123/providers/Microsoft.Authorization/policySetDefinitions/custom",
+          "Parameters": {},
+          "NonComplianceMessages": null
+        }
+      }"""
+        expected_output = """targetScope = 'managementGroup'
+
+
+@allowed([
+  'Default'
+  'DoNotEnforce'
+])
+@description('Policy assignment enforcement mode.')
+param enforcementMode string = 'DoNotEnforce'
+
+
+var parameters = {}
+
+resource assignment 'Microsoft.Authorization/policyAssignments@2020-03-01' = {
+  name: 'location-VMs'
+  properties: {
+    displayName: 'Custom set'
+    policyDefinitionId: custom.outputs.ID
+    parameters: parameters
+    enforcementMode: enforcementMode
+  }
+}
+
+module custom '../initiatives/custom.bicep' = {
+    name: 'custom'
+}
+"""
+        Self.assertEqual( generate_bicep_policy_assignment(json.loads(test_policy_set_json)), expected_output )
+
     def test_write_assignment_files(Self):
         test_assignments_dump = """[
   {

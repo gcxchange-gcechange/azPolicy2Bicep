@@ -74,6 +74,10 @@ def _translate_assignment(az_dump_dict: dict) -> dict:
     for key in bicep_keys:
         bicep_dict[key] = translate_to_bicep(az_dump_dict['Properties'][key]) if az_dump_dict['Properties'].get(key) is not None else default_empty[key]
 
+    definition_id_parts = az_dump_dict['Properties']['PolicyDefinitionId'].split('/')
+    if definition_id_parts[1] == 'subscriptions':
+        bicep_dict['PolicyDefinitionId'] = f"{definition_id_parts[-1].replace('-', '_')}.outputs.ID"
+
     return bicep_dict
 def _azpolicy_type_to_bicep(az_type: str) -> str:
     type_map = {
@@ -302,8 +306,29 @@ def generate_assignment_parameter_section(assignment_dict: dict) -> dict:
 
     return  {'assignment_parameters': assignment_parameters, 'bicep_params': bicep_params}
 
-def generate_bicep_policy_assignment(set_dict: dict) -> str:
-    parameters_dict = generate_assignment_parameter_section(set_dict)
+def generate_assignment_modules_section(assignment_dict: dict) -> str:
+    bicep_modules_string = ''
+    bicep_module_template = """
+module {name_underscores} '../{def_type}/{name}.bicep' = {{
+    name: '{name}'
+}}
+"""
+
+    defset_type_map = {
+        'policyDefinitions': 'definitions',
+        'policySetDefinitions': 'initiatives'
+    }
+
+    policyDefinitionId = assignment_dict['Properties']['PolicyDefinitionId'].split('/')
+    if policyDefinitionId[1] == 'providers':    # built-in definition
+        return ''
+
+    bicep_modules_string += bicep_module_template.format(name=policyDefinitionId[-1], name_underscores=policyDefinitionId[-1].replace('-', '_'), def_type=defset_type_map[policyDefinitionId[-2]])
+
+    return bicep_modules_string
+
+def generate_bicep_policy_assignment(assignment_dict: dict) -> str:
+    parameters_dict = generate_assignment_parameter_section(assignment_dict)
 
     bicep_policy_template = """targetScope = 'managementGroup'
 
@@ -327,9 +352,9 @@ resource assignment 'Microsoft.Authorization/policyAssignments@2020-03-01' = {{
     enforcementMode: enforcementMode
   }}
 }}
-"""
+{definition_modules}"""
 
-    return bicep_policy_template.format( **_translate_assignment(set_dict), bicep_params=parameters_dict['bicep_params'], assignmentParameters=parameters_dict['assignment_parameters'])
+    return bicep_policy_template.format( **_translate_assignment(assignment_dict), bicep_params=parameters_dict['bicep_params'], assignmentParameters=parameters_dict['assignment_parameters'], definition_modules=generate_assignment_modules_section(assignment_dict))
 
 def process_policy_assignments(assignments_file: dict, output_dir: str = "./policies/assignments") -> None:
     Path(output_dir).mkdir(parents=True, exist_ok=True)
