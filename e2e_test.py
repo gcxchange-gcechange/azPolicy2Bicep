@@ -8,13 +8,15 @@ class TestE2E(unittest.TestCase):
     def test(Self):
         test_input_files = {
             'definitions': 'e2e_test_files/definitions.json',
-            'initiatives': 'e2e_test_files/initiatives.json'
+            'initiatives': 'e2e_test_files/initiatives.json',
+            'assignments': 'e2e_test_files/assignments.json'
         }
         
         output_directory = 'e2e_test_output'
         expected_files_dict = {
             'definitions': ['Deny-VM-Creation.bicep', 'Deny-VM-Creation2.bicep'],
-            'initiatives': ['custom.bicep', '095e4ed9-c835-4ab6-9439-b5644362a06c.bicep']
+            'initiatives': ['custom.bicep', '095e4ed9-c835-4ab6-9439-b5644362a06c.bicep'],
+            'assignments': ['location-resources.bicep', 'location-VMs.bicep', 'SecurityCenterBuiltIn.bicep']
         }
 
         # clean up test dir for this test
@@ -24,7 +26,7 @@ class TestE2E(unittest.TestCase):
                 for file in listdir(f"{output_directory}/{subdirectory}"):
                     remove(f"{output_directory}/{subdirectory}/{file}")
 
-        run(['python3', 'azpolicy2bicep.py', test_input_files['definitions'], test_input_files['initiatives'], output_directory])
+        run(['python3', 'azpolicy2bicep.py', test_input_files['definitions'], test_input_files['initiatives'], test_input_files['assignments'], output_directory])
 
         Self.maxDiff = None
         for dir, expected_files in expected_files_dict.items():
@@ -301,6 +303,86 @@ resource policySet 'Microsoft.Authorization/policySetDefinitions@2020-03-01' = {
 
 
 output ID string = policySet.id
+"""
+            },
+            'assignments': {
+                'location-resources.bicep': """targetScope = 'managementGroup'
+
+
+@allowed([
+  'Default'
+  'DoNotEnforce'
+])
+@description('Policy assignment enforcement mode.')
+param enforcementMode string = 'DoNotEnforce'
+
+param listOfAllowedLocations array = [
+    'canadacentral'
+    'canadaeast'
+]
+
+
+var parameters = {
+    listOfAllowedLocations: {
+        value: listOfAllowedLocations
+    }
+}
+
+resource assignment 'Microsoft.Authorization/policyAssignments@2020-03-01' = {
+  name: 'location-resources'
+  properties: {
+    displayName: 'Restrict to Canada Central and Canada East regions for Resources'
+    policyDefinitionId: '/providers/Microsoft.Authorization/policyDefinitions/e56962a6-4747-49cd-b67b-bf8b01975c4c'
+    parameters: parameters
+    enforcementMode: enforcementMode
+  }
+}
+""",
+                'location-VMs.bicep': """targetScope = 'managementGroup'
+
+
+@allowed([
+  'Default'
+  'DoNotEnforce'
+])
+@description('Policy assignment enforcement mode.')
+param enforcementMode string = 'DoNotEnforce'
+
+
+var parameters = {}
+
+resource assignment 'Microsoft.Authorization/policyAssignments@2020-03-01' = {
+  name: 'location-VMs'
+  properties: {
+    displayName: 'Custom set'
+    policyDefinitionId: '/subscriptions/test-123/providers/Microsoft.Authorization/policySetDefinitions/custom'
+    parameters: parameters
+    enforcementMode: enforcementMode
+  }
+}
+""",
+                'SecurityCenterBuiltIn.bicep': """targetScope = 'managementGroup'
+
+
+@allowed([
+  'Default'
+  'DoNotEnforce'
+])
+@description('Policy assignment enforcement mode.')
+param enforcementMode string = 'Default'
+
+
+var parameters = {}
+
+resource assignment 'Microsoft.Authorization/policyAssignments@2020-03-01' = {
+  name: 'SecurityCenterBuiltIn'
+  properties: {
+    displayName: 'ASC Default (subscription: test-123)'
+    policyDefinitionId: '/providers/Microsoft.Authorization/policySetDefinitions/1f3afdf9-d0c9-4c3d-847f-89da613e70a8'
+    parameters: parameters
+    enforcementMode: enforcementMode
+  }
+}
 """
             }
         }

@@ -292,7 +292,7 @@ def generate_assignment_parameter_section(assignment_dict: dict) -> dict:
     bicep_param_tmeplate = """\nparam {parameter_name} {type_bicep} = {valueBicep}\n"""
 
     for name, parameter in assignment_dict['Properties']['Parameters'].items():
-        assignment_parameters += parameter_template.format(name=name,value=indentString(translate_to_bicep(parameter['value']), indent_level=2, indent_first_line=False))
+        assignment_parameters += parameter_template.format(name=name, value=name)   # the value comes from the bicep parameter that shares the name of the policy parameter
 
         bicep_params += bicep_param_allowed_tmeplate.format(allowedValuesBicepArray=translate_to_bicep(parameter['allowedValues'])) if parameter.get('allowedValues') is not None and parameter.get('defaultValue') is not None else ''
         bicep_params += bicep_param_tmeplate.format(parameter_name=name, type_bicep=_python_type_to_bicep(type(parameter['value'])), valueBicep=translate_to_bicep(parameter['value']))
@@ -344,12 +344,15 @@ def process_policy_assignments(assignments_file: dict, output_dir: str = "./poli
 def main():
     definitions_file = argv[1]
     initiatives_file = argv[2]
+    assignments_file = argv[3]
     root_output_directory = argv[-1]
 
     definitions_directory = f"{root_output_directory}/definitions"
     initiatives_directory = f"{root_output_directory}/initiatives"
+    assignments_directory = f"{root_output_directory}/assignments"
     process_policy_definitions(_load_json_dump(definitions_file), definitions_directory)
     process_policy_sets(_load_json_dump(initiatives_file), initiatives_directory)
+    process_policy_assignments(_load_json_dump(assignments_file), assignments_directory)
 
     return
 

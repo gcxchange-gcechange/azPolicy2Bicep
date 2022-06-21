@@ -61,10 +61,7 @@ param listOfAllowedLocations array = [
 
 var parameters = {
     listOfAllowedLocations: {
-        value: [
-            'canadacentral'
-            'canadaeast'
-        ]
+        value: listOfAllowedLocations
     }
 }
 
