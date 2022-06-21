@@ -55,6 +55,26 @@ def _translate_set(az_dump_dict: dict) -> dict:
 
     return bicep_dict
 
+def _translate_assignment(az_dump_dict: dict) -> dict:
+    bicep_keys = ['Description', 'DisplayName', 'PolicyDefinitionId', 'NonComplianceMessages']
+    default_empty = {
+        'Description': '',
+        'DisplayName': '',
+        'NonComplianceMessages': []
+    }
+    bicep_dict = {}
+
+    enforcement_mode_map = {
+        0: 'Default',
+        1: 'DoNotEnforce'
+    }
+
+    bicep_dict['Name'] = translate_to_bicep(az_dump_dict['Name'])
+    bicep_dict['EnforcementMode'] = translate_to_bicep(enforcement_mode_map[az_dump_dict['Properties']['EnforcementMode']])
+    for key in bicep_keys:
+        bicep_dict[key] = translate_to_bicep(az_dump_dict['Properties'][key]) if az_dump_dict['Properties'].get(key) is not None else default_empty[key]
+
+    return bicep_dict
 def _azpolicy_type_to_bicep(az_type: str) -> str:
     type_map = {
         'String': 'string',
@@ -78,6 +98,7 @@ def _python_type_to_bicep(value: type) -> str:
     }
     return type_map[str(value)]
 
+### definitions
 def generate_definition_parameter_section(definition_dict: dict) -> dict:
     if definition_dict['Properties']['Parameters'] is None:
         return {'policy_parameters': '', 'bicep_params': ''}
@@ -144,7 +165,7 @@ def process_policy_definitions(definitions_file: dict, output_dir: str = "./poli
 
     return
 
-
+### initiatives / policy sets
 def generate_set_parameter_section(definition_dict: dict) -> dict:
     if definition_dict['Properties']['Parameters'] is None:
         return {'set_parameters': '', 'bicep_params': ''}
@@ -253,6 +274,63 @@ def process_policy_sets(initiatives_file: dict, output_dir: str = "./policies/in
         _write_bicep_file(file_path, set_bicep)
 
     return
+
+### assignments
+def generate_assignment_parameter_section(assignment_dict: dict) -> dict:
+    if assignment_dict['Properties']['Parameters'] is None:
+        return {'assignment_parameters': '', 'bicep_params': ''}
+
+    assignment_parameters = ''
+    parameter_template = """
+    {name}: {{
+        value: {value}
+    }}"""
+
+    bicep_params = ''
+    # splitting these up because allowed values and default value are optional
+    bicep_param_allowed_tmeplate = """\n@allowed({allowedValuesBicepArray})"""
+    bicep_param_tmeplate = """\nparam {parameter_name} {type_bicep} = {valueBicep}\n"""
+
+    for name, parameter in assignment_dict['Properties']['Parameters'].items():
+        assignment_parameters += parameter_template.format(name=name,value=indentString(translate_to_bicep(parameter['value']), indent_level=2, indent_first_line=False))
+
+        bicep_params += bicep_param_allowed_tmeplate.format(allowedValuesBicepArray=translate_to_bicep(parameter['allowedValues'])) if parameter.get('allowedValues') is not None and parameter.get('defaultValue') is not None else ''
+        bicep_params += bicep_param_tmeplate.format(parameter_name=name, type_bicep=_python_type_to_bicep(type(parameter['value'])), valueBicep=translate_to_bicep(parameter['value']))
+    
+    if assignment_parameters:
+        assignment_parameters += '\n'   # so the overall set parameter object closing bracket is on a new line
+
+    return  {'assignment_parameters': assignment_parameters, 'bicep_params': bicep_params}
+
+def generate_bicep_policy_assignment(set_dict: dict) -> str:
+    parameters_dict = generate_assignment_parameter_section(set_dict)
+
+    bicep_policy_template = """targetScope = 'managementGroup'
+
+
+@allowed([
+  'Default'
+  'DoNotEnforce'
+])
+@description('Policy assignment enforcement mode.')
+param enforcementMode string = {EnforcementMode}
+{bicep_params}
+
+var parameters = {{{assignmentParameters}}}
+
+resource assignment 'Microsoft.Authorization/policyAssignments@2020-03-01' = {{
+  name: {Name}
+  properties: {{
+    displayName: {DisplayName}
+    policyDefinitionId: {PolicyDefinitionId}
+    parameters: parameters
+    enforcementMode: enforcementMode
+  }}
+}}
+"""
+
+    return bicep_policy_template.format( **_translate_assignment(set_dict), bicep_params=parameters_dict['bicep_params'], assignmentParameters=parameters_dict['assignment_parameters'])
+
 
 def main():
     definitions_file = argv[1]
