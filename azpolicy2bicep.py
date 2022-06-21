@@ -331,6 +331,15 @@ resource assignment 'Microsoft.Authorization/policyAssignments@2020-03-01' = {{
 
     return bicep_policy_template.format( **_translate_assignment(set_dict), bicep_params=parameters_dict['bicep_params'], assignmentParameters=parameters_dict['assignment_parameters'])
 
+def process_policy_assignments(assignments_file: dict, output_dir: str = "./policies/assignments") -> None:
+    Path(output_dir).mkdir(parents=True, exist_ok=True)
+    
+    for assignment in assignments_file:
+        assignment_bicep = generate_bicep_policy_assignment(assignment)
+        file_path = f"{output_dir}/{assignment['Name']}.bicep"
+        _write_bicep_file(file_path, assignment_bicep)
+
+    return
 
 def main():
     definitions_file = argv[1]
