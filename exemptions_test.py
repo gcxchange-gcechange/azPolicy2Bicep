@@ -39,7 +39,6 @@ resource exemption 'Microsoft.Authorization/policyExemptions@2020-07-01-preview'
     }
 }
 """
-        Self.maxDiff = None
         Self.assertEqual( generate_bicep_policy_exemption(json.loads(test_policy_set_json)), expected_output )
 
 

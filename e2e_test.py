@@ -9,14 +9,16 @@ class TestE2E(unittest.TestCase):
         test_input_files = {
             'definitions': 'e2e_test_files/definitions.json',
             'initiatives': 'e2e_test_files/initiatives.json',
-            'assignments': 'e2e_test_files/assignments.json'
+            'assignments': 'e2e_test_files/assignments.json',
+            'exemptions': 'e2e_test_files/exemptions.json'
         }
         
         output_directory = 'e2e_test_output'
         expected_files_dict = {
             'definitions': ['Deny-VM-Creation.bicep', 'Deny-VM-Creation2.bicep'],
             'initiatives': ['custom.bicep', '095e4ed9-c835-4ab6-9439-b5644362a06c.bicep'],
-            'assignments': ['location-resources.bicep', 'location-VMs.bicep', 'SecurityCenterBuiltIn.bicep']
+            'assignments': ['location-resources.bicep', 'location-VMs.bicep', 'SecurityCenterBuiltIn.bicep'],
+            'exemptions':  ['testexemp.bicep']
         }
 
         # clean up test dir for this test
@@ -26,7 +28,7 @@ class TestE2E(unittest.TestCase):
                 for file in listdir(f"{output_directory}/{subdirectory}"):
                     remove(f"{output_directory}/{subdirectory}/{file}")
 
-        run(['python3', 'azpolicy2bicep.py', test_input_files['definitions'], test_input_files['initiatives'], test_input_files['assignments'], output_directory])
+        run(['python3', 'azpolicy2bicep.py', test_input_files['definitions'], test_input_files['initiatives'], test_input_files['assignments'], test_input_files['exemptions'], output_directory])
 
         Self.maxDiff = None
         for dir, expected_files in expected_files_dict.items():
@@ -388,6 +390,21 @@ resource assignment 'Microsoft.Authorization/policyAssignments@2020-03-01' = {
   }
 }
 """
-            }
+            },
+            'exemptions': {
+                'testexemp.bicep': """targetScope = 'managementGroup'
+
+
+resource exemption 'Microsoft.Authorization/policyExemptions@2020-07-01-preview' = {
+    name: 'testexemp'
+    properties: {
+        displayName: 'a test exemption'
+        description: 'test exemption 1'
+        policyAssignmentId: '/subscriptions/test-123/providers/Microsoft.Authorization/policyAssignments/location-VMs'
+        exemptionCategory: 'Waiver'
+    }
+}
+"""
+            },
         }
         return expected[resource_type][file_name]

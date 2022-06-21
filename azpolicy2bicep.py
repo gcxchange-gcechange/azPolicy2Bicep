@@ -400,18 +400,31 @@ resource exemption 'Microsoft.Authorization/policyExemptions@2020-07-01-preview'
 
     return bicep_policy_template.format( **_translate_exemption(exemption_dict) )
 
+def process_policy_exemptions(exemptions_file: dict, output_dir: str = "./policies/exemptions") -> None:
+    Path(output_dir).mkdir(parents=True, exist_ok=True)
+    
+    for exemption in exemptions_file:
+        exemption_bicep = generate_bicep_policy_exemption(exemption)
+        file_path = f"{output_dir}/{exemption['Name']}.bicep"
+        _write_bicep_file(file_path, exemption_bicep)
+
+    return
+
 def main():
     definitions_file = argv[1]
     initiatives_file = argv[2]
     assignments_file = argv[3]
+    exemptions_file = argv[4]
     root_output_directory = argv[-1]
 
     definitions_directory = f"{root_output_directory}/definitions"
     initiatives_directory = f"{root_output_directory}/initiatives"
     assignments_directory = f"{root_output_directory}/assignments"
+    exemptions_directory = f"{root_output_directory}/exemptions"
     process_policy_definitions(_load_json_dump(definitions_file), definitions_directory)
     process_policy_sets(_load_json_dump(initiatives_file), initiatives_directory)
     process_policy_assignments(_load_json_dump(assignments_file), assignments_directory)
+    process_policy_exemptions(_load_json_dump(exemptions_file), exemptions_directory)
 
     return
 
