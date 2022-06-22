@@ -223,7 +223,7 @@ def generate_set_policy_def_section(set_dict: dict) -> str:
         format_strings = {}
 
         policyDefinitionId = policy_set_definition['policyDefinitionId'].split('/')
-        if policyDefinitionId[1] == 'subscriptions':    # custom definition
+        if policyDefinitionId[1] == 'subscriptions' or policyDefinitionId[3] == 'managementGroups':    # custom definition
             policy_set_definition['policyDefinitionId'] = "{policyDefinitionId}"
             format_strings['policyDefinitionId'] = f"{policyDefinitionId[-1].replace('-', '_')}.outputs.ID"
             template_strings.append(policy_set_definition['policyDefinitionId'])
@@ -247,7 +247,7 @@ def generate_set_modules_section(set_dict: dict) -> str:
 
     for policy in set_dict['Properties']['PolicyDefinitions']:
         policyDefinitionId = policy['policyDefinitionId'].split('/')
-        if policyDefinitionId[1] == 'providers':    # built-in definition
+        if policyDefinitionId[1] == 'providers' and policyDefinitionId[2] == 'Microsoft.Authorization':    # built-in definition
             continue
 
         bicep_modules_string += bicep_module_template.format(name=policyDefinitionId[-1], name_underscores=policyDefinitionId[-1].replace('-', '_'))

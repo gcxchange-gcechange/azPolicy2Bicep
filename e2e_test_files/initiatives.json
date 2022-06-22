@@ -116,11 +116,11 @@
     },
     {
         "Name": "custom",
-        "ResourceId": "/subscriptions/123-soasdffpoasifu/providers/Microsoft.Authorization/policySetDefinitions/custom",
+        "ResourceId": "/providers/Microsoft.Management/managementGroups/test/providers/Microsoft.Authorization/policySetDefinitions/custom",
         "ResourceName": "custom",
         "ResourceType": "Microsoft.Authorization/policySetDefinitions",
         "SubscriptionId": "123-soasdffpoasifu",
-        "PolicySetDefinitionId": "/subscriptions/123-soasdffpoasifu/providers/Microsoft.Authorization/policySetDefinitions/custom",
+        "PolicySetDefinitionId": "/providers/Microsoft.Management/managementGroups/testproviders/Microsoft.Authorization/policySetDefinitions/custom",
         "Properties": {
           "Description": null,
           "DisplayName": "Custom Set",
@@ -140,7 +140,7 @@
           "PolicyDefinitions": [
             {
               "policyDefinitionReferenceId": "deny-vm-creation-test",
-              "policyDefinitionId": "/subscriptions/123-soasdffpoasifu/providers/Microsoft.Authorization/policyDefinitions/Deny-VM-Creation",
+              "policyDefinitionId": "/providers/Microsoft.Management/managementGroups/test/providers/Microsoft.Authorization/policyDefinitions/Deny-VM-Creation",
               "parameters": {},
               "groupNames": [
                 "Custom"
