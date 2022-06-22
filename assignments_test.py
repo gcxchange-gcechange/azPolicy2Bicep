@@ -82,15 +82,15 @@ resource assignment 'Microsoft.Authorization/policyAssignments@2020-03-01' = {
         "Identity": null,
         "Location": null,
         "Name": "location-VMs",
-        "ResourceId": "/subscriptions/test-123/providers/Microsoft.Authorization/policyAssignments/location-VMs",
+        "ResourceId": "/providers/Microsoft.Management/managementGroups/test/providers/Microsoft.Authorization/policyAssignments/location-VMs",
         "ResourceName": "location-VMs",
         "ResourceGroupName": null,
         "ResourceType": "Microsoft.Authorization/policyAssignments",
         "SubscriptionId": "test-123",
         "Sku": null,
-        "PolicyAssignmentId": "/subscriptions/test-123/providers/Microsoft.Authorization/policyAssignments/location-VMs",
+        "PolicyAssignmentId": "/providers/Microsoft.Management/managementGroups/test/providers/Microsoft.Authorization/policyAssignments/location-VMs",
         "Properties": {
-          "Scope": "/subscriptions/test-123",
+          "Scope": "/providers/Microsoft.Management/managementGroups/test",
           "NotScopes": null,
           "DisplayName": "Custom set",
           "Description": null,
@@ -101,7 +101,7 @@ resource assignment 'Microsoft.Authorization/policyAssignments@2020-03-01' = {
             "updatedOn": null
           },
           "EnforcementMode": 1,
-          "PolicyDefinitionId": "/subscriptions/test-123/providers/Microsoft.Authorization/policySetDefinitions/custom",
+          "PolicyDefinitionId": "/providers/Microsoft.Management/managementGroups/test/providers/Microsoft.Authorization/policySetDefinitions/custom",
           "Parameters": {},
           "NonComplianceMessages": null
         }

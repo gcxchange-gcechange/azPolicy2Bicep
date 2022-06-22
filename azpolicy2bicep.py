@@ -75,7 +75,7 @@ def _translate_assignment(az_dump_dict: dict) -> dict:
         bicep_dict[key] = translate_to_bicep(az_dump_dict['Properties'][key]) if az_dump_dict['Properties'].get(key) is not None else default_empty[key]
 
     definition_id_parts = az_dump_dict['Properties']['PolicyDefinitionId'].split('/')
-    if definition_id_parts[1] == 'subscriptions':
+    if definition_id_parts[1] == 'subscriptions' or definition_id_parts[3] == 'managementGroups':
         bicep_dict['PolicyDefinitionId'] = f"{definition_id_parts[-1].replace('-', '_')}.outputs.ID"
 
     return bicep_dict
@@ -336,7 +336,7 @@ module {name_underscores} '../{def_type}/{name}.bicep' = {{
     }
 
     policyDefinitionId = assignment_dict['Properties']['PolicyDefinitionId'].split('/')
-    if policyDefinitionId[1] == 'providers':    # built-in definition
+    if policyDefinitionId[1] == 'providers' and policyDefinitionId[2] == 'Microsoft.Authorization':    # built-in definition
         return ''
 
     bicep_modules_string += bicep_module_template.format(name=policyDefinitionId[-1], name_underscores=policyDefinitionId[-1].replace('-', '_'), def_type=defset_type_map[policyDefinitionId[-2]])
