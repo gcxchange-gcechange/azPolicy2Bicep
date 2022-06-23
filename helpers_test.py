@@ -51,10 +51,10 @@ class TestBicepTranslation(unittest.TestCase):
         Self.assertEqual( translate_to_bicep(testInput), expectedOutput )
 
     def test_object(Self):
-        testInput = {'foo': 'bar', 'test': 123}
+        testInput = {'foo': 'bar', 'test-123': 123}
         expectedOutput = """{
     foo: 'bar'
-    test: 123
+    'test-123': 123
 }"""
         Self.assertEqual( translate_to_bicep(testInput, "Object"), expectedOutput )
         Self.assertEqual( translate_to_bicep(testInput), expectedOutput )
