@@ -12,6 +12,6 @@ example export commands:
 ```powershell
 Get-AzPolicyDefinition -Custom -ManagementGroupName '$MG_NAME' | ConvertTo-Json -Depth 9 > definitions.json
 Get-AzPolicySetDefinition -Custom -ManagementGroupName '$MG_NAME' | ConvertTo-Json -Depth 9 > sets.json
-Get-AzPolicyAssignment -ManagementGroupName '$MG_NAME' | ConvertTo-Json -Depth 9 > assignments.json
-Get-AzPolicyExemption -ManagementGroupName '$MG_NAME' | ConvertTo-Json -Depth 9 > exemptions.json
+Get-AzPolicyAssignment | ConvertTo-Json -Depth 9 > assignments.json
+Get-AzPolicyExemption | ConvertTo-Json -Depth 9 > exemptions.json
 ```
