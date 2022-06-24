@@ -2,7 +2,7 @@ import json
 from sys import argv
 from pathlib import Path
 
-from helpers import indent, translate_to_bicep, indentString
+from helpers import indent, translate_to_bicep, indentString, quote_dash
 
 def _load_json_dump(file_name: str) -> dict:
     json_dict = {}
@@ -202,12 +202,12 @@ def generate_set_parameter_section(definition_dict: dict) -> dict:
     bicep_param_tmeplate = """\nparam {parameter_name} {type_bicep} = {valueBicep}\n"""
 
     for name, parameter in definition_dict['Properties']['Parameters'].items():
-        default_value_string = indentString(f"\ndefaultValue: {name}DefaultValue", indent_level=2, indent_first_line=False) if parameter.get('defaultValue') is not None else ''
+        default_value_string = indentString(f"\ndefaultValue: {name}DefaultValue".replace('-', '_'), indent_level=2, indent_first_line=False) if parameter.get('defaultValue') is not None else ''
         allowed_values_string = indentString(f"\nallowedValues: {translate_to_bicep(parameter['allowedValues'])}", indent_level=2, indent_first_line=False) if parameter.get('allowedValues') is not None else ''
-        set_parameters += parameter_template.format(name=name,type=translate_to_bicep(parameter['type']), default_value_string=default_value_string, allowed_values_string=allowed_values_string)
+        set_parameters += parameter_template.format(name=quote_dash(name),type=translate_to_bicep(parameter['type']), default_value_string=default_value_string, allowed_values_string=allowed_values_string)
 
         bicep_params += bicep_param_allowed_tmeplate.format(allowedValuesBicepArray=translate_to_bicep(parameter['allowedValues'])) if parameter.get('allowedValues') is not None and parameter.get('defaultValue') is not None else ''
-        bicep_params += bicep_param_tmeplate.format(parameter_name=f"{name}DefaultValue", type_bicep=_azpolicy_type_to_bicep(parameter['type']), valueBicep=translate_to_bicep(parameter['defaultValue'])) if parameter.get('defaultValue') is not None else ''
+        bicep_params += bicep_param_tmeplate.format(parameter_name=f"{name}DefaultValue".replace('-', '_'), type_bicep=_azpolicy_type_to_bicep(parameter['type']), valueBicep=translate_to_bicep(parameter['defaultValue'])) if parameter.get('defaultValue') is not None else ''
     
     if set_parameters:
         set_parameters += '\n'   # so the overall set parameter object closing bracket is on a new line

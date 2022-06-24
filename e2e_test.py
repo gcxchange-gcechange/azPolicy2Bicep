@@ -190,18 +190,18 @@ output ID string = policySet.id
     'true'
     'false'
 ])
-param IncludeArcMachinesDefaultValue string = 'false'
+param IncludeArcMachines_123DefaultValue string = 'false'
 
 
 var policyDefinitionGroups = []
 var parameters = {
-    IncludeArcMachines: {
+    'IncludeArcMachines-123': {
         type: 'String'
         allowedValues: [
             'true'
             'false'
         ]
-        defaultValue: IncludeArcMachinesDefaultValue
+        defaultValue: IncludeArcMachines_123DefaultValue
     }
 }
 var policyDefinitions = [
@@ -210,7 +210,7 @@ var policyDefinitions = [
         policyDefinitionId: '/providers/Microsoft.Authorization/policyDefinitions/4ceb8dc2-559c-478b-a15b-733fbf1e3738'
         parameters: {
             IncludeArcMachines: {
-                value: '[parameters(\\\'IncludeArcMachines\\\')]'
+                value: '[parameters(\\\'IncludeArcMachines-123\\\')]'
             }
         }
     }
@@ -219,7 +219,7 @@ var policyDefinitions = [
         policyDefinitionId: '/providers/Microsoft.Authorization/policyDefinitions/237b38db-ca4d-4259-9e47-7882441ca2c0'
         parameters: {
             IncludeArcMachines: {
-                value: '[parameters(\\\'IncludeArcMachines\\\')]'
+                value: '[parameters(\\\'IncludeArcMachines-123\\\')]'
             }
         }
     }
@@ -228,7 +228,7 @@ var policyDefinitions = [
         policyDefinitionId: '/providers/Microsoft.Authorization/policyDefinitions/bf16e0bb-31e1-4646-8202-60a235cc7e74'
         parameters: {
             IncludeArcMachines: {
-                value: '[parameters(\\\'IncludeArcMachines\\\')]'
+                value: '[parameters(\\\'IncludeArcMachines-123\\\')]'
             }
         }
     }
@@ -237,7 +237,7 @@ var policyDefinitions = [
         policyDefinitionId: '/providers/Microsoft.Authorization/policyDefinitions/da0f98fe-a24b-4ad5-af69-bd0400233661'
         parameters: {
             IncludeArcMachines: {
-                value: '[parameters(\\\'IncludeArcMachines\\\')]'
+                value: '[parameters(\\\'IncludeArcMachines-123\\\')]'
             }
         }
     }
@@ -246,7 +246,7 @@ var policyDefinitions = [
         policyDefinitionId: '/providers/Microsoft.Authorization/policyDefinitions/5b054a0d-39e2-4d53-bea3-9734cad2c69b'
         parameters: {
             IncludeArcMachines: {
-                value: '[parameters(\\\'IncludeArcMachines\\\')]'
+                value: '[parameters(\\\'IncludeArcMachines-123\\\')]'
             }
         }
     }
@@ -255,7 +255,7 @@ var policyDefinitions = [
         policyDefinitionId: '/providers/Microsoft.Authorization/policyDefinitions/a2d0e922-65d0-40c4-8f87-ea6da2d307a2'
         parameters: {
             IncludeArcMachines: {
-                value: '[parameters(\\\'IncludeArcMachines\\\')]'
+                value: '[parameters(\\\'IncludeArcMachines-123\\\')]'
             }
         }
     }
@@ -264,7 +264,7 @@ var policyDefinitions = [
         policyDefinitionId: '/providers/Microsoft.Authorization/policyDefinitions/ea53dbee-c6c9-4f0e-9f9e-de0039b78023'
         parameters: {
             IncludeArcMachines: {
-                value: '[parameters(\\\'IncludeArcMachines\\\')]'
+                value: '[parameters(\\\'IncludeArcMachines-123\\\')]'
             }
         }
     }
@@ -273,7 +273,7 @@ var policyDefinitions = [
         policyDefinitionId: '/providers/Microsoft.Authorization/policyDefinitions/e6955644-301c-44b5-a4c4-528577de6861'
         parameters: {
             IncludeArcMachines: {
-                value: '[parameters(\\\'IncludeArcMachines\\\')]'
+                value: '[parameters(\\\'IncludeArcMachines-123\\\')]'
             }
         }
     }
@@ -282,7 +282,7 @@ var policyDefinitions = [
         policyDefinitionId: '/providers/Microsoft.Authorization/policyDefinitions/f6ec09a3-78bf-4f8f-99dc-6c77182d0f99'
         parameters: {
             IncludeArcMachines: {
-                value: '[parameters(\\\'IncludeArcMachines\\\')]'
+                value: '[parameters(\\\'IncludeArcMachines-123\\\')]'
             }
         }
     }
