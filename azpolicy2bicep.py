@@ -156,9 +156,10 @@ def generate_bicep_definition(definition_dict: dict) -> str:
 var parameters = {{{policy_parameters}}}
 var policyRule = {PolicyRule}
 
-resource policy_definition 'Microsoft.Authorization/policyDefinitions@2021-06-01' = {{
+module policy_definition '../../example_modules/policy_definition.bicep' = {{
     name: {Name}
-    properties: {{
+    params: {{
+        name: {Name}
         description: {Description}
         displayName: {DisplayName}
         mode: {Mode}
@@ -169,8 +170,8 @@ resource policy_definition 'Microsoft.Authorization/policyDefinitions@2021-06-01
 }}
 
 
-output ID string = policy_definition.id
-output displayName string = policy_definition.properties.displayName
+output ID string = policy_definition.outputs.id
+output displayName string = policy_definition.outputs.displayName
 """
 
     return bicep_policy_template.format( **_translate_definition(definition_dict), **policies )

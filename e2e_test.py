@@ -76,9 +76,10 @@ var policyRule = {
     }
 }
 
-resource policy_definition 'Microsoft.Authorization/policyDefinitions@2021-06-01' = {
+module policy_definition '../../example_modules/policy_definition.bicep' = {
     name: 'Deny-VM-Creation'
-    properties: {
+    params: {
+        name: 'Deny-VM-Creation'
         description: 'Deny VM Creation - v2'
         displayName: 'Deny VM Creation test'
         mode: 'All'
@@ -89,8 +90,8 @@ resource policy_definition 'Microsoft.Authorization/policyDefinitions@2021-06-01
 }
 
 
-output ID string = policy_definition.id
-output displayName string = policy_definition.properties.displayName
+output ID string = policy_definition.outputs.id
+output displayName string = policy_definition.outputs.displayName
 """,
                 'Deny-VM-Creation2.bicep': """targetScope = 'managementGroup'
 
@@ -110,9 +111,10 @@ var policyRule = {
     }
 }
 
-resource policy_definition 'Microsoft.Authorization/policyDefinitions@2021-06-01' = {
+module policy_definition '../../example_modules/policy_definition.bicep' = {
     name: 'Deny-VM-Creation2'
-    properties: {
+    params: {
+        name: 'Deny-VM-Creation2'
         description: 'Deny VM Creation2 - v2'
         displayName: 'Deny VM Creation test2'
         mode: 'All'
@@ -123,8 +125,8 @@ resource policy_definition 'Microsoft.Authorization/policyDefinitions@2021-06-01
 }
 
 
-output ID string = policy_definition.id
-output displayName string = policy_definition.properties.displayName
+output ID string = policy_definition.outputs.id
+output displayName string = policy_definition.outputs.displayName
 """
             },
             'initiatives': {

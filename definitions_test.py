@@ -79,9 +79,10 @@ var policyRule = {
     }
 }
 
-resource policy_definition 'Microsoft.Authorization/policyDefinitions@2021-06-01' = {
+module policy_definition '../../example_modules/policy_definition.bicep' = {
     name: 'e765b5de-1225-4ba3-bd56-1ac6695af988'
-    properties: {
+    params: {
+        name: 'e765b5de-1225-4ba3-bd56-1ac6695af988'
         description: 'This policy enables you to restrict the locations your organization can create resource groups in. Use to enforce your geo-compliance requirements.'
         displayName: 'Allowed locations for resource groups'
         mode: 'All'
@@ -92,8 +93,8 @@ resource policy_definition 'Microsoft.Authorization/policyDefinitions@2021-06-01
 }
 
 
-output ID string = policy_definition.id
-output displayName string = policy_definition.properties.displayName
+output ID string = policy_definition.outputs.id
+output displayName string = policy_definition.outputs.displayName
 """
         Self.assertEqual( generate_bicep_definition(json.loads(test_definition_json)), expected_output )
 
@@ -369,9 +370,10 @@ var policyRule = {
     }
 }
 
-resource policy_definition 'Microsoft.Authorization/policyDefinitions@2021-06-01' = {
+module policy_definition '../../example_modules/policy_definition.bicep' = {
     name: '009259b0-12e8-42c9-94e7-7af86aa58d13'
-    properties: {
+    params: {
+        name: '009259b0-12e8-42c9-94e7-7af86aa58d13'
         description: 'Configure VMSS created with Shared Image Gallery images to automatically install the Guest Attestation extension to allow Azure Security Center to proactively attest and monitor the boot integrity. Boot integrity is attested via Remote Attestation.'
         displayName: '[Preview]: Configure VMSS created with Shared Image Gallery images to install the Guest Attestation extension'
         mode: 'Indexed'
@@ -382,8 +384,8 @@ resource policy_definition 'Microsoft.Authorization/policyDefinitions@2021-06-01
 }
 
 
-output ID string = policy_definition.id
-output displayName string = policy_definition.properties.displayName
+output ID string = policy_definition.outputs.id
+output displayName string = policy_definition.outputs.displayName
 """
         Self.assertEqual( generate_bicep_definition(json.loads(test_definition_json)), expected_output )
 
