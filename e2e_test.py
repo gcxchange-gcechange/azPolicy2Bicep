@@ -90,7 +90,7 @@ module policy_definition '../../example_modules/policy_definition.bicep' = {
 }
 
 
-output ID string = policy_definition.outputs.id
+output ID string = policy_definition.outputs.ID
 output displayName string = policy_definition.outputs.displayName
 """,
                 'Deny-VM-Creation2.bicep': """targetScope = 'managementGroup'
@@ -125,7 +125,7 @@ module policy_definition '../../example_modules/policy_definition.bicep' = {
 }
 
 
-output ID string = policy_definition.outputs.id
+output ID string = policy_definition.outputs.ID
 output displayName string = policy_definition.outputs.displayName
 """
             },
@@ -167,9 +167,10 @@ var policyDefinitions = [
 ]
 
 
-resource policySet 'Microsoft.Authorization/policySetDefinitions@2020-03-01' = {
+module policySet '../../example_modules/initiative.bicep' = {
     name: 'custom'
-    properties: {
+    params: {
+        name: 'custom'
         displayName: 'Custom Set'
         parameters: parameters
         policyDefinitionGroups: policyDefinitionGroups
@@ -184,7 +185,7 @@ module Deny_VM_Creation '../definitions/Deny-VM-Creation.bicep' = {
 }
 
 
-output ID string = policySet.id
+output ID string = policySet.outputs.ID
 """,
                 '095e4ed9-c835-4ab6-9439-b5644362a06c.bicep': """targetScope = 'managementGroup'
 
@@ -291,9 +292,10 @@ var policyDefinitions = [
 ]
 
 
-resource policySet 'Microsoft.Authorization/policySetDefinitions@2020-03-01' = {
+module policySet '../../example_modules/initiative.bicep' = {
     name: '095e4ed9-c835-4ab6-9439-b5644362a06c'
-    properties: {
+    params: {
+        name: '095e4ed9-c835-4ab6-9439-b5644362a06c'
         displayName: 'Audit machines with insecure password security settings'
         parameters: parameters
         policyDefinitionGroups: policyDefinitionGroups
@@ -306,7 +308,7 @@ resource policySet 'Microsoft.Authorization/policySetDefinitions@2020-03-01' = {
 
 
 
-output ID string = policySet.id
+output ID string = policySet.outputs.ID
 """
             },
             'assignments': {

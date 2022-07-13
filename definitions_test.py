@@ -93,7 +93,7 @@ module policy_definition '../../example_modules/policy_definition.bicep' = {
 }
 
 
-output ID string = policy_definition.outputs.id
+output ID string = policy_definition.outputs.ID
 output displayName string = policy_definition.outputs.displayName
 """
         Self.assertEqual( generate_bicep_definition(json.loads(test_definition_json)), expected_output )
@@ -384,7 +384,7 @@ module policy_definition '../../example_modules/policy_definition.bicep' = {
 }
 
 
-output ID string = policy_definition.outputs.id
+output ID string = policy_definition.outputs.ID
 output displayName string = policy_definition.outputs.displayName
 """
         Self.assertEqual( generate_bicep_definition(json.loads(test_definition_json)), expected_output )

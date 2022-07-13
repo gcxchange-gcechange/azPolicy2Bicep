@@ -170,7 +170,7 @@ module policy_definition '../../example_modules/policy_definition.bicep' = {{
 }}
 
 
-output ID string = policy_definition.outputs.id
+output ID string = policy_definition.outputs.ID
 output displayName string = policy_definition.outputs.displayName
 """
 
@@ -266,9 +266,10 @@ var parameters = {{{setParameters}}}
 var policyDefinitions = {policyDefinitions}
 
 
-resource policySet 'Microsoft.Authorization/policySetDefinitions@2020-03-01' = {{
+module policySet '../../example_modules/initiative.bicep' = {{
     name: {Name}
-    properties: {{
+    params: {{
+        name: {Name}
         displayName: {DisplayName}
         parameters: parameters
         policyDefinitionGroups: policyDefinitionGroups
@@ -281,7 +282,7 @@ resource policySet 'Microsoft.Authorization/policySetDefinitions@2020-03-01' = {
 {definition_modules}
 
 
-output ID string = policySet.id
+output ID string = policySet.outputs.ID
 """
 
     return bicep_policy_template.format( **_translate_set(set_dict), bicep_params=parameters_dict['bicep_params'], setParameters=parameters_dict['set_parameters'], policyDefinitions=generate_set_policy_def_section(set_dict), definition_modules=generate_set_modules_section(set_dict) )
