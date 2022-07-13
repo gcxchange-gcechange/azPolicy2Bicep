@@ -312,7 +312,7 @@ output ID string = policySet.outputs.ID
 """
             },
             'assignments': {
-                'location-resources.bicep': """targetScope = 'managementGroup'
+                'location-resources.bicep': """
 
 
 @allowed([
@@ -334,9 +334,10 @@ var parameters = {
     }
 }
 
-resource assignment 'Microsoft.Authorization/policyAssignments@2020-03-01' = {
+module assignment '../../example_modules/policy_assignment.bicep' = {
   name: 'location-resources'
-  properties: {
+  params: {
+    name: 'location-resources'
     displayName: 'Restrict to Canada Central and Canada East regions for Resources'
     policyDefinitionId: '/providers/Microsoft.Authorization/policyDefinitions/e56962a6-4747-49cd-b67b-bf8b01975c4c'
     parameters: parameters
@@ -344,7 +345,7 @@ resource assignment 'Microsoft.Authorization/policyAssignments@2020-03-01' = {
   }
 }
 """,
-                'location-VMs.bicep': """targetScope = 'managementGroup'
+                'location-VMs.bicep': """
 
 
 @allowed([
@@ -357,9 +358,10 @@ param enforcementMode string = 'DoNotEnforce'
 
 var parameters = {}
 
-resource assignment 'Microsoft.Authorization/policyAssignments@2020-03-01' = {
+module assignment '../../example_modules/policy_assignment.bicep' = {
   name: 'location-VMs'
-  properties: {
+  params: {
+    name: 'location-VMs'
     displayName: 'Custom set'
     policyDefinitionId: custom.outputs.ID
     parameters: parameters
@@ -371,7 +373,7 @@ module custom '../initiatives/custom.bicep' = {
     name: 'custom'
 }
 """,
-                'SecurityCenterBuiltIn.bicep': """targetScope = 'managementGroup'
+                'SecurityCenterBuiltIn.bicep': """
 
 
 @allowed([
@@ -384,9 +386,10 @@ param enforcementMode string = 'Default'
 
 var parameters = {}
 
-resource assignment 'Microsoft.Authorization/policyAssignments@2020-03-01' = {
+module assignment '../../example_modules/policy_assignment.bicep' = {
   name: 'SecurityCenterBuiltIn'
-  properties: {
+  params: {
+    name: 'SecurityCenterBuiltIn'
     displayName: 'ASC Default (subscription: test-123)'
     policyDefinitionId: '/providers/Microsoft.Authorization/policySetDefinitions/1f3afdf9-d0c9-4c3d-847f-89da613e70a8'
     parameters: parameters

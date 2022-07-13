@@ -43,7 +43,7 @@ class TestPolicyPolicySets(unittest.TestCase):
       "NonComplianceMessages": null
     }
   }"""
-        expected_output = """targetScope = 'managementGroup'
+        expected_output = """
 
 
 @allowed([
@@ -65,9 +65,10 @@ var parameters = {
     }
 }
 
-resource assignment 'Microsoft.Authorization/policyAssignments@2020-03-01' = {
+module assignment '../../example_modules/policy_assignment.bicep' = {
   name: 'location-resources'
-  properties: {
+  params: {
+    name: 'location-resources'
     displayName: 'Restrict to Canada Central and Canada East regions for Resources'
     policyDefinitionId: '/providers/Microsoft.Authorization/policyDefinitions/e56962a6-4747-49cd-b67b-bf8b01975c4c'
     parameters: parameters
@@ -106,7 +107,7 @@ resource assignment 'Microsoft.Authorization/policyAssignments@2020-03-01' = {
           "NonComplianceMessages": null
         }
       }"""
-        expected_output = """targetScope = 'managementGroup'
+        expected_output = """
 
 
 @allowed([
@@ -119,9 +120,10 @@ param enforcementMode string = 'DoNotEnforce'
 
 var parameters = {}
 
-resource assignment 'Microsoft.Authorization/policyAssignments@2020-03-01' = {
+module assignment '../../example_modules/policy_assignment.bicep' = {
   name: 'location-VMs'
-  properties: {
+  params: {
+    name: 'location-VMs'
     displayName: 'Custom set'
     policyDefinitionId: custom.outputs.ID
     parameters: parameters

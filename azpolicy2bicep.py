@@ -348,7 +348,7 @@ module {name_underscores} '../{def_type}/{name}.bicep' = {{
 def generate_bicep_policy_assignment(assignment_dict: dict) -> str:
     parameters_dict = generate_assignment_parameter_section(assignment_dict)
 
-    bicep_policy_template = """targetScope = 'managementGroup'
+    bicep_policy_template = """
 
 
 @allowed([
@@ -361,9 +361,10 @@ param enforcementMode string = {EnforcementMode}
 
 var parameters = {{{assignmentParameters}}}
 
-resource assignment 'Microsoft.Authorization/policyAssignments@2020-03-01' = {{
+module assignment '../../example_modules/policy_assignment.bicep' = {{
   name: {Name}
-  properties: {{
+  params: {{
+    name: {Name}
     displayName: {DisplayName}
     policyDefinitionId: {PolicyDefinitionId}
     parameters: parameters
