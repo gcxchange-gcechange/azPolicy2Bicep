@@ -399,12 +399,13 @@ module assignment '../../example_modules/policy_assignment.bicep' = {
 """
             },
             'exemptions': {
-                'testexemp.bicep': """targetScope = 'managementGroup'
+                'testexemp.bicep': """
 
 
-resource exemption 'Microsoft.Authorization/policyExemptions@2020-07-01-preview' = {
+module exemption '../../example_modules/policy_exemption.bicep' = {
     name: 'testexemp'
-    properties: {
+    params: {
+        name: 'testexemp'
         displayName: 'a test exemption'
         description: 'test exemption 1'
         policyAssignmentId: '/subscriptions/test-123/providers/Microsoft.Authorization/policyAssignments/location-VMs'

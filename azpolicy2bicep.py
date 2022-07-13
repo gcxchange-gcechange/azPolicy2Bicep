@@ -387,12 +387,13 @@ def process_policy_assignments(assignments_file: dict, output_dir: str = "./poli
 
 ## exemptions
 def generate_bicep_policy_exemption(exemption_dict: dict) -> str:
-    bicep_policy_template = """targetScope = 'managementGroup'
+    bicep_policy_template = """
 
 
-resource exemption 'Microsoft.Authorization/policyExemptions@2020-07-01-preview' = {{
+module exemption '../../example_modules/policy_exemption.bicep' = {{
     name: {Name}
-    properties: {{
+    params: {{
+        name: {Name}
         displayName: {DisplayName}
         description: {Description}
         policyAssignmentId: {PolicyAssignmentId}

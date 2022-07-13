@@ -26,12 +26,13 @@ class TestPolicyPolicySets(unittest.TestCase):
   "ResourceType": "Microsoft.Authorization/policyExemptions",
   "SubscriptionId": "test-123"
 }"""
-        expected_output = """targetScope = 'managementGroup'
+        expected_output = """
 
 
-resource exemption 'Microsoft.Authorization/policyExemptions@2020-07-01-preview' = {
+module exemption '../../example_modules/policy_exemption.bicep' = {
     name: 'testexemp'
-    properties: {
+    params: {
+        name: 'testexemp'
         displayName: 'a test exemption'
         description: 'test exemption 1'
         policyAssignmentId: '/subscriptions/test-123/providers/Microsoft.Authorization/policyAssignments/location-VMs'
