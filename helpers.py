@@ -1,5 +1,8 @@
-def quote_dash(string: str) -> str:
-    return f"'{string}'" if '-' in string else string
+from re import search
+
+def quote_special(string: str) -> str:
+    specials_regex = '[-!@#$%^&*;:"\'~`><.,?+=/\\\[\]\{\}\(\)\s]'
+    return f"'{string}'" if search( specials_regex, string ) is not None else string
 
 def translate_to_bicep(not_bicep: str, type_given: str = '', nested: bool = False, template: bool = False) -> str:
     if type(not_bicep) in [int, bool] \
@@ -33,7 +36,7 @@ def translate_to_bicep(not_bicep: str, type_given: str = '', nested: bool = Fals
         if template:
             bicep_object = '{{\n'
         for key, value in not_bicep.items():
-            bicep_object += f"{indent()}{quote_dash(key)}: {translate_to_bicep(value, nested=True, template=template)}\n"
+            bicep_object += f"{indent()}{quote_special(key)}: {translate_to_bicep(value, nested=True, template=template)}\n"
         bicep_object += "}"
         if template:
             bicep_object += "}"

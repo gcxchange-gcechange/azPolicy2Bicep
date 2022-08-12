@@ -59,6 +59,16 @@ class TestBicepTranslation(unittest.TestCase):
         Self.assertEqual( translate_to_bicep(testInput, "Object"), expectedOutput )
         Self.assertEqual( translate_to_bicep(testInput), expectedOutput )
 
+    def test_special_character_keys(Self):
+        testInput = {"$foo": "bar#", '@test &123': 123, "space test": 321}
+        expectedOutput = """{
+    '$foo': 'bar#'
+    '@test &123': 123
+    'space test': 321
+}"""
+        Self.assertEqual( translate_to_bicep(testInput, "Object"), expectedOutput )
+        Self.assertEqual( translate_to_bicep(testInput), expectedOutput )
+
     def test_translate_nested_object_with_arrays(Self):
         testInput = json.loads("""{
         "listOfAllowedLocations": {
