@@ -323,7 +323,7 @@ output ID string = policySet.outputs.ID
 """
             },
             'assignments': {
-                'location-resources.bicep': """
+                'location-resources.bicep': """targetScope = 'managementGroup'
 
 
 @allowed([
@@ -356,7 +356,7 @@ module assignment '../../example_modules/policy_assignment.bicep' = {
   }
 }
 """,
-                'location-VMs.bicep': """
+                'location-VMs.bicep': """targetScope = 'managementGroup'
 
 
 @allowed([
@@ -384,7 +384,7 @@ module custom '../initiatives/custom.bicep' = {
     name: 'custom'
 }
 """,
-                'SecurityCenterBuiltIn.bicep': """
+                'SecurityCenterBuiltIn.bicep': """targetScope = 'managementGroup'
 
 
 @allowed([

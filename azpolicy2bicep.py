@@ -348,7 +348,7 @@ module {name_underscores} '../{def_type}/{name}.bicep' = {{
 def generate_bicep_policy_assignment(assignment_dict: dict) -> str:
     parameters_dict = generate_assignment_parameter_section(assignment_dict)
 
-    bicep_policy_template = """
+    bicep_policy_template = """targetScope = 'managementGroup'
 
 
 @allowed([

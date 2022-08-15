@@ -43,7 +43,7 @@ class TestPolicyPolicySets(unittest.TestCase):
       "NonComplianceMessages": null
     }
   }"""
-        expected_output = """
+        expected_output = """targetScope = 'managementGroup'
 
 
 @allowed([
@@ -107,7 +107,7 @@ module assignment '../../example_modules/policy_assignment.bicep' = {
           "NonComplianceMessages": null
         }
       }"""
-        expected_output = """
+        expected_output = """targetScope = 'managementGroup'
 
 
 @allowed([
