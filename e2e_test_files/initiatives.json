@@ -147,6 +147,14 @@
               ]
             },
             {
+              "policyDefinitionReferenceId": "deny-vm-creation-test2",
+              "policyDefinitionId": "/providers/Microsoft.Management/managementGroups/test/providers/Microsoft.Authorization/policyDefinitions/Deny-VM-Creation2",
+              "parameters": {},
+              "groupNames": [
+                "Custom"
+              ]
+            },
+            {
               "policyDefinitionReferenceId": "restrict-to-canada-central-and-canada-east-regions-for-resources",
               "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/e56962a6-4747-49cd-b67b-bf8b01975c4c",
               "parameters": {

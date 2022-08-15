@@ -241,7 +241,7 @@ def generate_set_policy_def_section(set_dict: dict) -> str:
     return '[\n' + '\n'.join(policy_set_definitions) + '\n]'
 
 def generate_set_modules_section(set_dict: dict) -> str:
-    bicep_modules_string = ''
+    bicep_modules = []
     bicep_module_template = """module {name_underscores} '../definitions/{name}.bicep' = {{
     name: '{name}'
 }}"""
@@ -251,9 +251,9 @@ def generate_set_modules_section(set_dict: dict) -> str:
         if policyDefinitionId[1] == 'providers' and policyDefinitionId[2] == 'Microsoft.Authorization':    # built-in definition
             continue
 
-        bicep_modules_string += bicep_module_template.format(name=policyDefinitionId[-1], name_underscores=policyDefinitionId[-1].replace('-', '_'))
+        bicep_modules.append( bicep_module_template.format(name=policyDefinitionId[-1], name_underscores=policyDefinitionId[-1].replace('-', '_')) )
 
-    return bicep_modules_string
+    return '\n'.join(bicep_modules)
 
 def generate_bicep_policy_set(set_dict: dict) -> str:
     parameters_dict = generate_set_parameter_section(set_dict)

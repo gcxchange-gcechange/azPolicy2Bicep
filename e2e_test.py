@@ -150,6 +150,14 @@ var policyDefinitions = [
         ]
     }
     {
+        policyDefinitionReferenceId: toLower(replace(Deny_VM_Creation2.outputs.displayName, ' ', '-'))
+        policyDefinitionId: Deny_VM_Creation2.outputs.ID
+        parameters: {}
+        groupNames: [
+            'Custom'
+        ]
+    }
+    {
         policyDefinitionReferenceId: 'restrict-to-canada-central-and-canada-east-regions-for-resources'
         policyDefinitionId: '/providers/Microsoft.Authorization/policyDefinitions/e56962a6-4747-49cd-b67b-bf8b01975c4c'
         parameters: {
@@ -182,6 +190,9 @@ module policySet '../../example_modules/initiative.bicep' = {
 // definitions from modules
 module Deny_VM_Creation '../definitions/Deny-VM-Creation.bicep' = {
     name: 'Deny-VM-Creation'
+}
+module Deny_VM_Creation2 '../definitions/Deny-VM-Creation2.bicep' = {
+    name: 'Deny-VM-Creation2'
 }
 
 
