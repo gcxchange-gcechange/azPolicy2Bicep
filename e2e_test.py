@@ -407,7 +407,7 @@ module exemption '../../example_modules/policy_exemption.bicep' = {
     params: {
         name: 'testexemp'
         displayName: 'a test exemption'
-        description: 'test exemption 1'
+        description: ''
         policyAssignmentId: '/subscriptions/test-123/providers/Microsoft.Authorization/policyAssignments/location-VMs'
         exemptionCategory: 'Waiver'
     }

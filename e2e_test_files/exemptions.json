@@ -5,7 +5,7 @@
             "PolicyDefinitionReferenceIds": null,
             "ExemptionCategory": "Waiver",
             "DisplayName": "a test exemption",
-            "Description": "test exemption 1",
+            "Description": null,
             "ExpiresOn": null,
             "Metadata": null
         },

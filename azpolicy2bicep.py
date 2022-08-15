@@ -51,7 +51,7 @@ def _translate_set(az_dump_dict: dict) -> dict:
     bicep_dict['Name'] = translate_to_bicep(az_dump_dict['Name'])
     bicep_dict['PolicyType'] = translate_to_bicep(policy_type_map[az_dump_dict['Properties']['PolicyType']])
     for key in bicep_keys:
-        bicep_dict[key] = translate_to_bicep(az_dump_dict['Properties'][key]) if az_dump_dict['Properties'].get(key) is not None else default_empty[key]
+        bicep_dict[key] = translate_to_bicep(az_dump_dict['Properties'][key]) if az_dump_dict['Properties'].get(key) is not None else translate_to_bicep(default_empty[key])
 
     return bicep_dict
 
@@ -72,7 +72,7 @@ def _translate_assignment(az_dump_dict: dict) -> dict:
     bicep_dict['Name'] = translate_to_bicep(az_dump_dict['Name'])
     bicep_dict['EnforcementMode'] = translate_to_bicep(enforcement_mode_map[az_dump_dict['Properties']['EnforcementMode']])
     for key in bicep_keys:
-        bicep_dict[key] = translate_to_bicep(az_dump_dict['Properties'][key]) if az_dump_dict['Properties'].get(key) is not None else default_empty[key]
+        bicep_dict[key] = translate_to_bicep(az_dump_dict['Properties'][key]) if az_dump_dict['Properties'].get(key) is not None else translate_to_bicep(default_empty[key])
 
     definition_id_parts = az_dump_dict['Properties']['PolicyDefinitionId'].split('/')
     if definition_id_parts[1] == 'subscriptions' or definition_id_parts[3] == 'managementGroups':
@@ -91,7 +91,7 @@ def _translate_exemption(az_dump_dict: dict) -> dict:
 
     bicep_dict['Name'] = translate_to_bicep(az_dump_dict['Name'])
     for key in bicep_keys:
-        bicep_dict[key] = translate_to_bicep(az_dump_dict['Properties'][key]) if az_dump_dict['Properties'].get(key) is not None else default_empty[key]
+        bicep_dict[key] = translate_to_bicep(az_dump_dict['Properties'][key]) if az_dump_dict['Properties'].get(key) is not None else translate_to_bicep(default_empty[key])
 
     return bicep_dict
 
