@@ -314,10 +314,11 @@ def generate_assignment_parameter_section(assignment_dict: dict) -> dict:
     bicep_param_tmeplate = """\nparam {parameter_name} {type_bicep} = {valueBicep}\n"""
 
     for name, parameter in assignment_dict['Properties']['Parameters'].items():
-        assignment_parameters += parameter_template.format(name=name, value=name)   # the value comes from the bicep parameter that shares the name of the policy parameter
+        name_dashless =  name.replace('-', '_')
+        assignment_parameters += parameter_template.format(name=quote_special(name), value=name_dashless)   # the value comes from the bicep parameter that shares the name of the policy parameter
 
         bicep_params += bicep_param_allowed_tmeplate.format(allowedValuesBicepArray=translate_to_bicep(parameter['allowedValues'])) if parameter.get('allowedValues') is not None and parameter.get('defaultValue') is not None else ''
-        bicep_params += bicep_param_tmeplate.format(parameter_name=name, type_bicep=_python_type_to_bicep(type(parameter['value'])), valueBicep=translate_to_bicep(parameter['value']))
+        bicep_params += bicep_param_tmeplate.format(parameter_name=name_dashless, type_bicep=_python_type_to_bicep(type(parameter['value'])), valueBicep=translate_to_bicep(parameter['value']))
     
     if assignment_parameters:
         assignment_parameters += '\n'   # so the overall set parameter object closing bracket is on a new line

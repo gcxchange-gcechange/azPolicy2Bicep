@@ -38,6 +38,9 @@ class TestPolicyPolicySets(unittest.TestCase):
             "canadacentral",
             "canadaeast"
           ]
+        },
+        "metricsEnabled-7f89b1eb-583c-429a-8828-af049802c1d9": {
+          "value": false
         }
       },
       "NonComplianceMessages": null
@@ -58,10 +61,15 @@ param listOfAllowedLocations array = [
     'canadaeast'
 ]
 
+param metricsEnabled_7f89b1eb_583c_429a_8828_af049802c1d9 bool = false
+
 
 var parameters = {
     listOfAllowedLocations: {
         value: listOfAllowedLocations
+    }
+    'metricsEnabled-7f89b1eb-583c-429a-8828-af049802c1d9': {
+        value: metricsEnabled_7f89b1eb_583c_429a_8828_af049802c1d9
     }
 }
 
@@ -76,6 +84,7 @@ module assignment '../../example_modules/policy_assignment.bicep' = {
   }
 }
 """
+        Self.maxDiff = None
         Self.assertEqual( generate_bicep_policy_assignment(json.loads(test_policy_set_json)), expected_output )
 
     def test_generate_bicep_custom_policy_assignment(Self):

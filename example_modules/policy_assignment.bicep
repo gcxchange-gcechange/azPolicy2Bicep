@@ -1,3 +1,4 @@
+targetScope = 'managementGroup'
 
 param name string
 param displayName string = name
