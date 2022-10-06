@@ -1,7 +1,7 @@
 import unittest
 import json
 
-from helpers import translate_to_bicep, indent, indentString, detect_pwsh_dump
+from helpers import translate_to_bicep, indent, indentString, detect_pwsh_dump, enumerate_duplicate_display_names
 
 # need to be able to handle: 
 #   string, array, object, boolean, integer, float, or datetime
@@ -194,6 +194,43 @@ class TestIndent(unittest.TestCase):
   }"""
         expected_output = 1
         Self.assertEqual( detect_pwsh_dump(json.loads(test_input)), expected_output )
+
+class TestDisplayNames(unittest.TestCase):
+
+    def test_duplicate_display_names(Self):
+        testInput = json.loads("""[
+    {
+        "Name": "123asdf",
+        "Properties": {
+            "Description": "Deny VM Creation2 - v2",
+            "DisplayName": "Deny VM Creation test"
+        }
+    },
+    {
+        "Name": "12345asdf",
+        "Properties": {
+            "Description": "Deny VM Creation2 - v2",
+            "DisplayName": "Deny VM Creation test"
+        }
+    }
+]""")
+        expectedOutput = json.loads("""[
+    {
+        "Name": "123asdf",
+        "Properties": {
+            "Description": "Deny VM Creation2 - v2",
+            "DisplayName": "Deny VM Creation test"
+        }
+    },
+    {
+        "Name": "12345asdf",
+        "Properties": {
+            "Description": "Deny VM Creation2 - v2",
+            "DisplayName": "Deny VM Creation test_2"
+        }
+    }
+]""")
+        Self.assertEqual( enumerate_duplicate_display_names(testInput), expectedOutput )
 
 if __name__ == '__main__':
     unittest.main()

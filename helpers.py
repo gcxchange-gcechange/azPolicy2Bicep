@@ -68,3 +68,20 @@ def detect_pwsh_dump(policy_dump) -> bool:
         return True
 
     return False
+
+def enumerate_duplicate_display_names(policy_dump: list) -> list:
+    policy_dump_no_dupes = []
+    display_names_map = {}
+    for policy in policy_dump:
+        no_dupes_policy = policy
+
+        display_name = policy["Properties"].get("DisplayName")
+        name_count = display_names_map.get(display_name) + 1 if display_names_map.get(display_name) is not None else 1
+        if name_count > 1: ## seen this one before
+            display_name = f"{display_name}_{name_count}"
+            no_dupes_policy["Properties"]["DisplayName"] = display_name
+        
+        display_names_map[display_name] = name_count
+        policy_dump_no_dupes.append(no_dupes_policy)
+
+    return policy_dump_no_dupes
