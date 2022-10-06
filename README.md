@@ -10,8 +10,8 @@ python3 azpolicy2bicep.py {path/to/definitions/dump.json} {path/to/initiatives/d
 
 example export commands:
 ```powershell
-Get-AzPolicyDefinition -Custom -ManagementGroupName '$MG_NAME' | ConvertTo-Json -Depth 9 > definitions.json
-Get-AzPolicySetDefinition -Custom -ManagementGroupName '$MG_NAME' | ConvertTo-Json -Depth 9 > sets.json
+Get-AzPolicyDefinition -Custom | ConvertTo-Json -Depth 9 > definitions.json
+Get-AzPolicySetDefinition -Custom | ConvertTo-Json -Depth 9 > sets.json
 Get-AzPolicyAssignment | ConvertTo-Json -Depth 9 > assignments.json
 Get-AzPolicyExemption | ConvertTo-Json -Depth 9 > exemptions.json
 ```
