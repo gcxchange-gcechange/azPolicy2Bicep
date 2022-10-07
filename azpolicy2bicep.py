@@ -157,7 +157,7 @@ var parameters = {{{policy_parameters}}}
 var policyRule = {PolicyRule}
 
 module policy_definition '../../example_modules/policy_definition.bicep' = {{
-    name: {Name}
+    name: {DisplayName}
     params: {{
         name: {Name}
         description: {Description}

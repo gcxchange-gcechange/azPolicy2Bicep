@@ -77,7 +77,7 @@ var policyRule = {
 }
 
 module policy_definition '../../example_modules/policy_definition.bicep' = {
-    name: 'Deny-VM-Creation'
+    name: 'Deny VM Creation test'
     params: {
         name: 'Deny-VM-Creation'
         description: 'Deny VM Creation - v2'
@@ -112,7 +112,7 @@ var policyRule = {
 }
 
 module policy_definition '../../example_modules/policy_definition.bicep' = {
-    name: 'Deny-VM-Creation2'
+    name: 'Deny VM Creation test2'
     params: {
         name: 'Deny-VM-Creation2'
         description: 'Deny VM Creation2 - v2'
