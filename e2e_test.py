@@ -43,7 +43,7 @@ class TestE2E(unittest.TestCase):
     def _get_expected_file_string(Self, resource_type: str, file_name:str) -> str:
         expected = {
             'definitions': {
-                'Deny-VM-Creation.bicep': """targetScope = 'managementGroup'
+                'Deny VM Creation test.bicep': """targetScope = 'managementGroup'
 
 @allowed([
     'AuditIfNotExists'
@@ -93,7 +93,7 @@ module policy_definition '../../example_modules/policy_definition.bicep' = {
 output ID string = policy_definition.outputs.ID
 output displayName string = policy_definition.outputs.displayName
 """,
-                'Deny-VM-Creation2.bicep': """targetScope = 'managementGroup'
+                'Deny VM Creation test2.bicep': """targetScope = 'managementGroup'
 
 
 var parameters = {}

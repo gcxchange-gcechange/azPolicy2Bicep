@@ -181,7 +181,7 @@ def process_policy_definitions(definitions_file: dict, output_dir: str = "./poli
     
     for definition in definitions_file:
         definition_bicep = generate_bicep_definition(definition)
-        file_path = f"{output_dir}/{definition['Name']}.bicep"
+        file_path = f"{output_dir}/{definition['Properties']['DisplayName']}.bicep"
         _write_bicep_file(file_path, definition_bicep)
 
     return

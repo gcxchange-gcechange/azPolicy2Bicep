@@ -480,7 +480,7 @@ output displayName string = policy_definition.outputs.displayName
 ]
 """
         expected_output_directory = 'testing_directory'
-        expected_files_list = ['Deny-VM-Creation.bicep', 'Deny-VM-Creation2.bicep']
+        expected_files_list = ['Deny VM Creation test.bicep', 'Deny VM Creation test2.bicep']
 
         # clean up test dir for this test
         if expected_output_directory in listdir('./'):
@@ -489,7 +489,10 @@ output displayName string = policy_definition.outputs.displayName
 
         process_policy_definitions(json.loads(test_definitions_dump), expected_output_directory)
 
-        Self.assertEqual(listdir(expected_output_directory).sort(), expected_files_list.sort())
+        files_list = listdir(expected_output_directory)
+        files_list.sort()
+        expected_files_list.sort()
+        Self.assertEqual(files_list, expected_files_list)
 
 
 if __name__ == '__main__':
