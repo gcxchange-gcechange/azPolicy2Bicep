@@ -1,7 +1,7 @@
 import unittest
 import json
 
-from helpers import translate_to_bicep, indent, indentString, detect_pwsh_dump, enumerate_duplicate_display_names
+from helpers import translate_to_bicep, indent, indentString, detect_pwsh_dump, enumerate_duplicate_display_names, generate_reference_dict
 
 # need to be able to handle: 
 #   string, array, object, boolean, integer, float, or datetime
@@ -231,6 +231,34 @@ class TestDisplayNames(unittest.TestCase):
     }
 ]""")
         Self.assertEqual( enumerate_duplicate_display_names(testInput), expectedOutput )
+
+
+    def test_generate_reference_dict(Self):
+        testInput = json.loads("""[
+    {
+        "Name": "123asdf",
+        "Properties": {
+            "Description": "Deny VM Creation2 - v2",
+            "DisplayName": "Deny VM Creation test"
+        }
+    },
+    {
+        "Name": "12345asdf",
+        "Properties": {
+            "Description": "Deny VM Creation2 - v2",
+            "DisplayName": "Deny VM Creation"
+        }
+    }
+]""")
+        expectedOutput = json.loads("""{
+        "123asdf": {
+            "DisplayName": "Deny VM Creation test"
+        },
+        "12345asdf": {
+            "DisplayName": "Deny VM Creation"
+        }
+}""")
+        Self.assertEqual( generate_reference_dict(testInput), expectedOutput )
 
 if __name__ == '__main__':
     unittest.main()

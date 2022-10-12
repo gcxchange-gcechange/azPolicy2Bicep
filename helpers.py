@@ -85,3 +85,12 @@ def enumerate_duplicate_display_names(policy_dump: list) -> list:
         policy_dump_no_dupes.append(no_dupes_policy)
 
     return policy_dump_no_dupes
+
+def generate_reference_dict( policy_dump: list ) -> dict:
+    reference_dict = {}
+
+    for policy in policy_dump:
+        reference_dict[policy['Name']] = {}
+        reference_dict[policy['Name']]['DisplayName'] = policy["Properties"]["DisplayName"]
+
+    return reference_dict
