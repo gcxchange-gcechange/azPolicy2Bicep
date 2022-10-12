@@ -216,7 +216,10 @@ module custom '../initiatives/custom.bicep' = {
 
         process_policy_assignments(json.loads(test_assignments_dump), expected_output_directory)
 
-        Self.assertEqual(listdir(expected_output_directory).sort(), expected_files_list.sort())
+        files_list = listdir(expected_output_directory)
+        files_list.sort()
+        expected_files_list.sort()
+        Self.assertEqual(files_list, expected_files_list)
 
 
 if __name__ == '__main__':

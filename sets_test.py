@@ -220,7 +220,7 @@ output ID string = policySet.outputs.ID
 ]
 """
         expected_output_directory = 'testing_directory'
-        expected_files_list = ['custom.bicep', 'custom2.bicep', '06122b01-688c-42a8-af2e-fa97dd39aa3b.bicep']
+        expected_files_list = ['custom.bicep', '06122b01-688c-42a8-af2e-fa97dd39aa3b.bicep']
 
         # clean up test dir for this test
         if expected_output_directory in listdir('./'):
@@ -229,7 +229,10 @@ output ID string = policySet.outputs.ID
 
         process_policy_sets(json.loads(test_sets_dump), expected_output_directory)
 
-        Self.assertEqual(listdir(expected_output_directory).sort(), expected_files_list.sort())
+        files_list = listdir(expected_output_directory)
+        files_list.sort()
+        expected_files_list.sort()
+        Self.assertEqual(files_list, expected_files_list)
 
 
 if __name__ == '__main__':

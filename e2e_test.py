@@ -15,7 +15,7 @@ class TestE2E(unittest.TestCase):
         
         output_directory = 'e2e_test_output'
         expected_files_dict = {
-            'definitions': ['Deny-VM-Creation.bicep', 'Deny-VM-Creation2.bicep'],
+            'definitions': ['Deny VM Creation test.bicep', 'Deny VM Creation test2.bicep'],
             'initiatives': ['custom.bicep', '095e4ed9-c835-4ab6-9439-b5644362a06c.bicep'],
             'assignments': ['location-resources.bicep', 'location-VMs.bicep', 'SecurityCenterBuiltIn.bicep'],
             'exemptions':  ['testexemp.bicep']
@@ -32,7 +32,11 @@ class TestE2E(unittest.TestCase):
 
         Self.maxDiff = None
         for dir, expected_files in expected_files_dict.items():
-            Self.assertEqual(listdir(f"{output_directory}/{dir}").sort(), expected_files.sort())
+
+            expected_files.sort()
+            files_list = listdir(f"{output_directory}/{dir}")
+            files_list.sort()
+            Self.assertEqual(files_list, expected_files)
             
             for bicep_file_name in listdir(f"{output_directory}/{dir}"):
                 with open(f"{output_directory}/{dir}/{bicep_file_name}", 'r') as bicep_file:
