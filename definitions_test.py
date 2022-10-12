@@ -451,7 +451,7 @@ output displayName string = policy_definition.outputs.displayName
     "SubscriptionId": "123456-aasfoidj",
     "Properties": {
       "Description": "Deny VM Creation2 - v2",
-      "DisplayName": "Deny VM Creation test2",
+      "DisplayName": "Deny VM Creation test",
       "Metadata": {
         "createdBy": null,
         "createdOn": null,
@@ -480,7 +480,7 @@ output displayName string = policy_definition.outputs.displayName
 ]
 """
         expected_output_directory = 'testing_directory'
-        expected_files_list = ['Deny VM Creation test.bicep', 'Deny VM Creation test2.bicep']
+        expected_files_list = ['Deny VM Creation test.bicep', 'Deny VM Creation test_2.bicep']
 
         # clean up test dir for this test
         if expected_output_directory in listdir('./'):

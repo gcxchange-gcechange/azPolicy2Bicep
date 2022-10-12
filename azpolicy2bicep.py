@@ -2,7 +2,7 @@ import json
 from sys import argv
 from pathlib import Path
 
-from helpers import indent, translate_to_bicep, indentString, quote_special
+from helpers import indent, translate_to_bicep, indentString, quote_special, enumerate_duplicate_display_names
 
 def _load_json_dump(file_name: str) -> dict:
     json_dict = {}
@@ -179,7 +179,8 @@ output displayName string = policy_definition.outputs.displayName
 def process_policy_definitions(definitions_file: dict, output_dir: str = "./policies/definitions") -> None:
     Path(output_dir).mkdir(parents=True, exist_ok=True)
     
-    for definition in definitions_file:
+    
+    for definition in enumerate_duplicate_display_names(definitions_file):
         definition_bicep = generate_bicep_definition(definition)
         file_path = f"{output_dir}/{definition['Properties']['DisplayName']}.bicep"
         _write_bicep_file(file_path, definition_bicep)
