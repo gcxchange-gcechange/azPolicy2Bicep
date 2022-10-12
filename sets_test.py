@@ -8,6 +8,11 @@ from azpolicy2bicep import generate_bicep_policy_set, process_policy_sets
 class TestPolicyPolicySets(unittest.TestCase):
 
     def test_generate_bicep_policy_set(Self):
+        test_reference_dict = {
+            'Deny-VM-Creation': {
+                'DisplayName': 'deny vm creation test'
+            }
+        }
         test_policy_set_json = """{
   "Name": "custom",
   "ResourceId": "/subscriptions/123-soasdffpoasifu/providers/Microsoft.Authorization/policySetDefinitions/custom",
@@ -72,8 +77,8 @@ var policyDefinitionGroups = [
 var parameters = {}
 var policyDefinitions = [
     {
-        policyDefinitionReferenceId: toLower(replace(Deny_VM_Creation.outputs.displayName, ' ', '-'))
-        policyDefinitionId: Deny_VM_Creation.outputs.ID
+        policyDefinitionReferenceId: toLower(replace(module_deny_vm_creation_test.outputs.displayName, ' ', '-'))
+        policyDefinitionId: module_deny_vm_creation_test.outputs.ID
         parameters: {}
         groupNames: [
             'Custom'
@@ -98,7 +103,7 @@ var policyDefinitions = [
 
 
 module policySet '../../example_modules/initiative.bicep' = {
-    name: 'custom'
+    name: 'Custom Set'
     params: {
         name: 'custom'
         displayName: 'Custom Set'
@@ -110,18 +115,32 @@ module policySet '../../example_modules/initiative.bicep' = {
 
 
 // definitions from modules
-module Deny_VM_Creation '../definitions/Deny-VM-Creation.bicep' = {
-    name: 'Deny-VM-Creation'
+module module_deny_vm_creation_test '../definitions/deny vm creation test.bicep' = {
+    name: 'deny vm creation test'
 }
 
 
 output ID string = policySet.outputs.ID
 """
-        
-        Self.assertEqual( generate_bicep_policy_set(json.loads(test_policy_set_json)), expected_output )
+        Self.maxDiff = None
+        Self.assertEqual( generate_bicep_policy_set(json.loads(test_policy_set_json), test_reference_dict), expected_output )
 
 
     def test_write_set_files(Self):
+        test_definitions_dump = """[
+  {
+    "Name": "Deny-VM-Creation",
+    "ResourceId": "/subscriptions/123456-aasfoidj/providers/Microsoft.Authorization/policyDefinitions/Deny-VM-Creation",
+    "ResourceName": "Deny-VM-Creation",
+    "ResourceType": "Microsoft.Authorization/policyDefinitions",
+    "SubscriptionId": "123456-aasfoidj",
+    "Properties": {
+      "Description": "Deny VM Creation - v2",
+      "DisplayName": "Deny VM Creation test"
+    }
+    }
+]
+        """
         test_sets_dump = """[
 {
     "Name": "06122b01-688c-42a8-af2e-fa97dd39aa3b",
@@ -227,7 +246,7 @@ output ID string = policySet.outputs.ID
             for file in listdir(expected_output_directory):
                 remove(f"{expected_output_directory}/{file}")
 
-        process_policy_sets(json.loads(test_sets_dump), expected_output_directory)
+        process_policy_sets(json.loads(test_sets_dump), json.loads(test_definitions_dump), expected_output_directory)
 
         files_list = listdir(expected_output_directory)
         files_list.sort()

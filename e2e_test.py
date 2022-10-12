@@ -146,16 +146,16 @@ var policyDefinitionGroups = [
 var parameters = {}
 var policyDefinitions = [
     {
-        policyDefinitionReferenceId: toLower(replace(Deny_VM_Creation.outputs.displayName, ' ', '-'))
-        policyDefinitionId: Deny_VM_Creation.outputs.ID
+        policyDefinitionReferenceId: toLower(replace(module_Deny_VM_Creation_test.outputs.displayName, ' ', '-'))
+        policyDefinitionId: module_Deny_VM_Creation_test.outputs.ID
         parameters: {}
         groupNames: [
             'Custom'
         ]
     }
     {
-        policyDefinitionReferenceId: toLower(replace(Deny_VM_Creation2.outputs.displayName, ' ', '-'))
-        policyDefinitionId: Deny_VM_Creation2.outputs.ID
+        policyDefinitionReferenceId: toLower(replace(module_Deny_VM_Creation_test2.outputs.displayName, ' ', '-'))
+        policyDefinitionId: module_Deny_VM_Creation_test2.outputs.ID
         parameters: {}
         groupNames: [
             'Custom'
@@ -180,7 +180,7 @@ var policyDefinitions = [
 
 
 module policySet '../../example_modules/initiative.bicep' = {
-    name: 'custom'
+    name: 'Custom Set'
     params: {
         name: 'custom'
         displayName: 'Custom Set'
@@ -192,11 +192,11 @@ module policySet '../../example_modules/initiative.bicep' = {
 
 
 // definitions from modules
-module Deny_VM_Creation '../definitions/Deny-VM-Creation.bicep' = {
-    name: 'Deny-VM-Creation'
+module module_Deny_VM_Creation_test '../definitions/Deny VM Creation test.bicep' = {
+    name: 'Deny VM Creation test'
 }
-module Deny_VM_Creation2 '../definitions/Deny-VM-Creation2.bicep' = {
-    name: 'Deny-VM-Creation2'
+module module_Deny_VM_Creation_test2 '../definitions/Deny VM Creation test2.bicep' = {
+    name: 'Deny VM Creation test2'
 }
 
 
@@ -308,7 +308,7 @@ var policyDefinitions = [
 
 
 module policySet '../../example_modules/initiative.bicep' = {
-    name: '095e4ed9-c835-4ab6-9439-b5644362a06c'
+    name: 'Audit machines with insecure password security settings'
     params: {
         name: '095e4ed9-c835-4ab6-9439-b5644362a06c'
         displayName: 'Audit machines with insecure password security settings'

@@ -2,7 +2,7 @@ import json
 from sys import argv
 from pathlib import Path
 
-from helpers import indent, translate_to_bicep, indentString, quote_special, enumerate_duplicate_display_names
+from helpers import indent, translate_to_bicep, indentString, quote_special, enumerate_duplicate_display_names, generate_reference_dict
 
 def _load_json_dump(file_name: str) -> dict:
     json_dict = {}
@@ -216,7 +216,7 @@ def generate_set_parameter_section(definition_dict: dict) -> dict:
 
     return  {'set_parameters': set_parameters, 'bicep_params': bicep_params}
 
-def generate_set_policy_def_section(set_dict: dict) -> str:
+def generate_set_policy_def_section(set_dict: dict, definitions_reference: dict) -> str:
     policy_set_definitions = []
     
     for policy in set_dict['Properties']['PolicyDefinitions']:
@@ -226,12 +226,13 @@ def generate_set_policy_def_section(set_dict: dict) -> str:
 
         policyDefinitionId = policy_set_definition['policyDefinitionId'].split('/')
         if policyDefinitionId[1] == 'subscriptions' or policyDefinitionId[3] == 'managementGroups':    # custom definition
+            definition_reference_name = "module_" + definitions_reference[policyDefinitionId[-1]]['DisplayName'].replace('-', '_').replace(' ', '_')
             policy_set_definition['policyDefinitionId'] = "{policyDefinitionId}"
-            format_strings['policyDefinitionId'] = f"{policyDefinitionId[-1].replace('-', '_')}.outputs.ID"
+            format_strings['policyDefinitionId'] = f"{definition_reference_name}.outputs.ID"
             template_strings.append(policy_set_definition['policyDefinitionId'])
 
             policy_set_definition['policyDefinitionReferenceId'] = "{policyDefinitionReferenceId}"
-            format_strings['policyDefinitionReferenceId'] = f"toLower(replace({policyDefinitionId[-1].replace('-', '_')}.outputs.displayName, ' ', '-'))"
+            format_strings['policyDefinitionReferenceId'] = f"toLower(replace({definition_reference_name}.outputs.displayName, ' ', '-'))"
             template_strings.append(policy_set_definition['policyDefinitionReferenceId'])
         
             policy_set_definitions.append( indent() + translate_to_bicep(policy_set_definition, nested=True, template=template_strings).format_map(format_strings) )
@@ -241,9 +242,9 @@ def generate_set_policy_def_section(set_dict: dict) -> str:
 
     return '[\n' + '\n'.join(policy_set_definitions) + '\n]'
 
-def generate_set_modules_section(set_dict: dict) -> str:
+def generate_set_modules_section(set_dict: dict, definitions_reference: dict) -> str:
     bicep_modules = []
-    bicep_module_template = """module {name_underscores} '../definitions/{name}.bicep' = {{
+    bicep_module_template = """module module_{name_underscores} '../definitions/{name}.bicep' = {{
     name: '{name}'
 }}"""
 
@@ -252,11 +253,12 @@ def generate_set_modules_section(set_dict: dict) -> str:
         if policyDefinitionId[1] == 'providers' and policyDefinitionId[2] == 'Microsoft.Authorization':    # built-in definition
             continue
 
-        bicep_modules.append( bicep_module_template.format(name=policyDefinitionId[-1], name_underscores=policyDefinitionId[-1].replace('-', '_')) )
+        definition_display_name = definitions_reference[policyDefinitionId[-1]]['DisplayName']
+        bicep_modules.append( bicep_module_template.format(name=definition_display_name, name_underscores=definition_display_name.replace('-', '_').replace(' ', '_')) )
 
     return '\n'.join(bicep_modules)
 
-def generate_bicep_policy_set(set_dict: dict) -> str:
+def generate_bicep_policy_set(set_dict: dict, definitions_reference: dict) -> str:
     parameters_dict = generate_set_parameter_section(set_dict)
 
     bicep_policy_template = """targetScope = 'managementGroup'
@@ -268,7 +270,7 @@ var policyDefinitions = {policyDefinitions}
 
 
 module policySet '../../example_modules/initiative.bicep' = {{
-    name: {Name}
+    name: {DisplayName}
     params: {{
         name: {Name}
         displayName: {DisplayName}
@@ -286,13 +288,15 @@ module policySet '../../example_modules/initiative.bicep' = {{
 output ID string = policySet.outputs.ID
 """
 
-    return bicep_policy_template.format( **_translate_set(set_dict), bicep_params=parameters_dict['bicep_params'], setParameters=parameters_dict['set_parameters'], policyDefinitions=generate_set_policy_def_section(set_dict), definition_modules=generate_set_modules_section(set_dict) )
+    return bicep_policy_template.format( **_translate_set(set_dict), bicep_params=parameters_dict['bicep_params'], setParameters=parameters_dict['set_parameters'], 
+        policyDefinitions=generate_set_policy_def_section(set_dict, definitions_reference), definition_modules=generate_set_modules_section(set_dict, definitions_reference) )
 
-def process_policy_sets(initiatives_file: dict, output_dir: str = "./policies/initiatives") -> None:
+def process_policy_sets(initiatives_file: dict, definitions_file: list, output_dir: str = "./policies/initiatives") -> None:
     Path(output_dir).mkdir(parents=True, exist_ok=True)
     
+    definitions_reference = generate_reference_dict(definitions_file)
     for set in initiatives_file:
-        set_bicep = generate_bicep_policy_set(set)
+        set_bicep = generate_bicep_policy_set(set, definitions_reference)
         file_path = f"{output_dir}/{set['Name']}.bicep"
         _write_bicep_file(file_path, set_bicep)
 
@@ -423,12 +427,13 @@ def main():
     exemptions_file = argv[4]
     root_output_directory = argv[-1]
 
+    definitions_list = _load_json_dump(definitions_file)
     definitions_directory = f"{root_output_directory}/definitions"
     initiatives_directory = f"{root_output_directory}/initiatives"
     assignments_directory = f"{root_output_directory}/assignments"
     exemptions_directory = f"{root_output_directory}/exemptions"
-    process_policy_definitions(_load_json_dump(definitions_file), definitions_directory)
-    process_policy_sets(_load_json_dump(initiatives_file), initiatives_directory)
+    process_policy_definitions(definitions_list, definitions_directory)
+    process_policy_sets(_load_json_dump(initiatives_file), definitions_list, initiatives_directory)
     process_policy_assignments(_load_json_dump(assignments_file), assignments_directory)
     process_policy_exemptions(_load_json_dump(exemptions_file), exemptions_directory)
 
