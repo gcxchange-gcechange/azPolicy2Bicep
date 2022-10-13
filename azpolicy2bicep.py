@@ -368,7 +368,7 @@ param enforcementMode string = {EnforcementMode}
 var parameters = {{{assignmentParameters}}}
 
 module assignment '../../example_modules/policy_assignment.bicep' = {{
-  name: {Name}
+  name: {DisplayName}
   params: {{
     name: {Name}
     displayName: {DisplayName}
@@ -386,7 +386,7 @@ def process_policy_assignments(assignments_file: dict, output_dir: str = "./poli
     
     for assignment in assignments_file:
         assignment_bicep = generate_bicep_policy_assignment(assignment)
-        file_path = f"{output_dir}/{assignment['Name']}.bicep"
+        file_path = f"{output_dir}/{assignment['Properties']['DisplayName']}.bicep"
         _write_bicep_file(file_path, assignment_bicep)
 
     return

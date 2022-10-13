@@ -74,7 +74,7 @@ var parameters = {
 }
 
 module assignment '../../example_modules/policy_assignment.bicep' = {
-  name: 'location-resources'
+  name: 'Restrict to Canada Central and Canada East regions for Resources'
   params: {
     name: 'location-resources'
     displayName: 'Restrict to Canada Central and Canada East regions for Resources'
@@ -130,7 +130,7 @@ param enforcementMode string = 'DoNotEnforce'
 var parameters = {}
 
 module assignment '../../example_modules/policy_assignment.bicep' = {
-  name: 'location-VMs'
+  name: 'Custom set'
   params: {
     name: 'location-VMs'
     displayName: 'Custom set'
@@ -207,7 +207,7 @@ module custom '../initiatives/custom.bicep' = {
   }
 ]"""
         expected_output_directory = 'testing_directory'
-        expected_files_list = ['location-VMs.bicep', 'SecurityCenterBuiltIn.bicep']
+        expected_files_list = ['Custom set.bicep', 'ASC Default (subscription: test-123).bicep']
 
         # clean up test dir for this test
         if expected_output_directory in listdir('./'):

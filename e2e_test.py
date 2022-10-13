@@ -17,7 +17,7 @@ class TestE2E(unittest.TestCase):
         expected_files_dict = {
             'definitions': ['Deny VM Creation test.bicep', 'Deny VM Creation test2.bicep'],
             'initiatives': ['Custom Set.bicep', 'Audit machines with insecure password security settings.bicep'],
-            'assignments': ['location-resources.bicep', 'location-VMs.bicep', 'SecurityCenterBuiltIn.bicep'],
+            'assignments': ['Restrict to Canada Central and Canada East regions for Resources.bicep', 'Custom set.bicep', 'ASC Default (subscription: test-123).bicep'],
             'exemptions':  ['testexemp.bicep']
         }
 
@@ -327,7 +327,7 @@ output ID string = policySet.outputs.ID
 """
             },
             'assignments': {
-                'location-resources.bicep': """targetScope = 'managementGroup'
+                'Restrict to Canada Central and Canada East regions for Resources.bicep': """targetScope = 'managementGroup'
 
 
 @allowed([
@@ -350,7 +350,7 @@ var parameters = {
 }
 
 module assignment '../../example_modules/policy_assignment.bicep' = {
-  name: 'location-resources'
+  name: 'Restrict to Canada Central and Canada East regions for Resources'
   params: {
     name: 'location-resources'
     displayName: 'Restrict to Canada Central and Canada East regions for Resources'
@@ -360,7 +360,7 @@ module assignment '../../example_modules/policy_assignment.bicep' = {
   }
 }
 """,
-                'location-VMs.bicep': """targetScope = 'managementGroup'
+                'Custom set.bicep': """targetScope = 'managementGroup'
 
 
 @allowed([
@@ -374,7 +374,7 @@ param enforcementMode string = 'DoNotEnforce'
 var parameters = {}
 
 module assignment '../../example_modules/policy_assignment.bicep' = {
-  name: 'location-VMs'
+  name: 'Custom set'
   params: {
     name: 'location-VMs'
     displayName: 'Custom set'
@@ -388,7 +388,7 @@ module custom '../initiatives/custom.bicep' = {
     name: 'custom'
 }
 """,
-                'SecurityCenterBuiltIn.bicep': """targetScope = 'managementGroup'
+                'ASC Default (subscription: test-123).bicep': """targetScope = 'managementGroup'
 
 
 @allowed([
@@ -402,7 +402,7 @@ param enforcementMode string = 'Default'
 var parameters = {}
 
 module assignment '../../example_modules/policy_assignment.bicep' = {
-  name: 'SecurityCenterBuiltIn'
+  name: 'ASC Default (subscription: test-123)'
   params: {
     name: 'SecurityCenterBuiltIn'
     displayName: 'ASC Default (subscription: test-123)'
