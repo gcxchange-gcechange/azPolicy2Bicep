@@ -18,7 +18,7 @@ class TestE2E(unittest.TestCase):
             'definitions': ['Deny VM Creation test.bicep', 'Deny VM Creation test2.bicep'],
             'initiatives': ['Custom Set.bicep', 'Audit machines with insecure password security settings.bicep'],
             'assignments': ['Restrict to Canada Central and Canada East regions for Resources.bicep', 'Custom set.bicep', 'ASC Default (subscription: test-123).bicep'],
-            'exemptions':  ['testexemp.bicep']
+            'exemptions':  ['a test exemption.bicep']
         }
 
         # clean up test dir for this test
@@ -414,11 +414,11 @@ module assignment '../../example_modules/policy_assignment.bicep' = {
 """
             },
             'exemptions': {
-                'testexemp.bicep': """
+                'a test exemption.bicep': """
 
 
 module exemption '../../example_modules/policy_exemption.bicep' = {
-    name: 'testexemp'
+    name: 'a test exemption'
     params: {
         name: 'testexemp'
         displayName: 'a test exemption'

@@ -397,7 +397,7 @@ def generate_bicep_policy_exemption(exemption_dict: dict) -> str:
 
 
 module exemption '../../example_modules/policy_exemption.bicep' = {{
-    name: {Name}
+    name: {DisplayName}
     params: {{
         name: {Name}
         displayName: {DisplayName}
@@ -415,7 +415,7 @@ def process_policy_exemptions(exemptions_file: dict, output_dir: str = "./polici
     
     for exemption in exemptions_file:
         exemption_bicep = generate_bicep_policy_exemption(exemption)
-        file_path = f"{output_dir}/{exemption['Name']}.bicep"
+        file_path = f"{output_dir}/{exemption['Properties']['DisplayName']}.bicep"
         _write_bicep_file(file_path, exemption_bicep)
 
     return
