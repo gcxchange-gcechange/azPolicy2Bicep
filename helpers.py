@@ -1,8 +1,12 @@
-from re import search
+from re import search, sub
 
 def quote_special(string: str) -> str:
     specials_regex = '[-!@#$%^&*;:"\'~`><.,?+=/\\\[\]\{\}\(\)\s]'
     return f"'{string}'" if search( specials_regex, string ) is not None else string
+
+def specials_to_underscore(string: str) -> str:
+    specials_regex = '[-!@#$%^&*;:"\'~`><.,?+=/\\\[\]\{\}\(\)\s]'
+    return sub(specials_regex, '_', string)
 
 def translate_to_bicep(not_bicep: str, type_given: str = '', nested: bool = False, template: bool = False) -> str:
     if type(not_bicep) in [int, bool] \

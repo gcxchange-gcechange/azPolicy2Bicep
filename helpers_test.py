@@ -1,7 +1,7 @@
 import unittest
 import json
 
-from helpers import translate_to_bicep, indent, indentString, detect_pwsh_dump, enumerate_duplicate_display_names, generate_reference_dict
+from helpers import translate_to_bicep, indent, indentString, detect_pwsh_dump, enumerate_duplicate_display_names, generate_reference_dict, specials_to_underscore
 
 # need to be able to handle: 
 #   string, array, object, boolean, integer, float, or datetime
@@ -259,6 +259,12 @@ class TestDisplayNames(unittest.TestCase):
         }
 }""")
         Self.assertEqual( generate_reference_dict(testInput), expectedOutput )
+
+    def test_specials_to_underscore(Self):
+        testInput = "test! #1.4, -- foo / bar"
+        expectedOutput = "test___1_4_____foo___bar"
+
+        Self.assertEqual( specials_to_underscore(testInput), expectedOutput )
 
 if __name__ == '__main__':
     unittest.main()
