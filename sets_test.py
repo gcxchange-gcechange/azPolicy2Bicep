@@ -239,7 +239,7 @@ output ID string = policySet.outputs.ID
 ]
 """
         expected_output_directory = 'testing_directory'
-        expected_files_list = ['custom.bicep', '06122b01-688c-42a8-af2e-fa97dd39aa3b.bicep']
+        expected_files_list = ['Custom Set.bicep', '[Deprecated]: Audit Windows VMs in which the Administrators group does not contain only the specified members.bicep']
 
         # clean up test dir for this test
         if expected_output_directory in listdir('./'):

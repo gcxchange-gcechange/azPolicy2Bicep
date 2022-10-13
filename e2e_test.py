@@ -16,7 +16,7 @@ class TestE2E(unittest.TestCase):
         output_directory = 'e2e_test_output'
         expected_files_dict = {
             'definitions': ['Deny VM Creation test.bicep', 'Deny VM Creation test2.bicep'],
-            'initiatives': ['custom.bicep', '095e4ed9-c835-4ab6-9439-b5644362a06c.bicep'],
+            'initiatives': ['Custom Set.bicep', 'Audit machines with insecure password security settings.bicep'],
             'assignments': ['location-resources.bicep', 'location-VMs.bicep', 'SecurityCenterBuiltIn.bicep'],
             'exemptions':  ['testexemp.bicep']
         }
@@ -134,7 +134,7 @@ output displayName string = policy_definition.outputs.displayName
 """
             },
             'initiatives': {
-                'custom.bicep': """targetScope = 'managementGroup'
+                'Custom Set.bicep': """targetScope = 'managementGroup'
 
 
 var policyDefinitionGroups = [
@@ -202,7 +202,7 @@ module module_Deny_VM_Creation_test2 '../definitions/Deny VM Creation test2.bice
 
 output ID string = policySet.outputs.ID
 """,
-                '095e4ed9-c835-4ab6-9439-b5644362a06c.bicep': """targetScope = 'managementGroup'
+                'Audit machines with insecure password security settings.bicep': """targetScope = 'managementGroup'
 
 @allowed([
     'true'

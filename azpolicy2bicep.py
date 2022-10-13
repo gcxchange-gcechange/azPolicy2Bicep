@@ -297,7 +297,7 @@ def process_policy_sets(initiatives_file: dict, definitions_file: list, output_d
     definitions_reference = generate_reference_dict(definitions_file)
     for set in initiatives_file:
         set_bicep = generate_bicep_policy_set(set, definitions_reference)
-        file_path = f"{output_dir}/{set['Name']}.bicep"
+        file_path = f"{output_dir}/{set['Properties']['DisplayName']}.bicep"
         _write_bicep_file(file_path, set_bicep)
 
     return
