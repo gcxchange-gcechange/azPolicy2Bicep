@@ -27,6 +27,7 @@ def _translate_definition(az_dump_dict: dict) -> dict:
 
     bicep_dict['Name'] = translate_to_bicep(az_dump_dict['Name'])
     bicep_dict['PolicyType'] = translate_to_bicep(policy_type_map[az_dump_dict['Properties']['PolicyType']])
+    bicep_dict['DeploymentName'] = translate_to_bicep(f"Definition: {az_dump_dict['Properties']['DisplayName']}")
     for key in bicep_keys:
         bicep_dict[key] = translate_to_bicep(az_dump_dict['Properties'][key])
 
@@ -50,6 +51,7 @@ def _translate_set(az_dump_dict: dict) -> dict:
 
     bicep_dict['Name'] = translate_to_bicep(az_dump_dict['Name'])
     bicep_dict['PolicyType'] = translate_to_bicep(policy_type_map[az_dump_dict['Properties']['PolicyType']])
+    bicep_dict['DeploymentName'] = translate_to_bicep(f"Initiative: {az_dump_dict['Properties']['DisplayName']}")
     for key in bicep_keys:
         bicep_dict[key] = translate_to_bicep(az_dump_dict['Properties'][key]) if az_dump_dict['Properties'].get(key) is not None else translate_to_bicep(default_empty[key])
 
@@ -75,6 +77,7 @@ def _translate_assignment(az_dump_dict: dict, defset_reference: dict) -> dict:
 
     bicep_dict['Name'] = translate_to_bicep(az_dump_dict['Name'])
     bicep_dict['EnforcementMode'] = translate_to_bicep(enforcement_mode_map[az_dump_dict['Properties']['EnforcementMode']])
+    bicep_dict['DeploymentName'] = translate_to_bicep(f"Assignment: {az_dump_dict['Properties']['DisplayName']}")
     for key in bicep_keys:
         bicep_dict[key] = translate_to_bicep(az_dump_dict['Properties'][key]) if az_dump_dict['Properties'].get(key) is not None else translate_to_bicep(default_empty[key])
 
@@ -95,6 +98,7 @@ def _translate_exemption(az_dump_dict: dict) -> dict:
     bicep_dict = {}
 
     bicep_dict['Name'] = translate_to_bicep(az_dump_dict['Name'])
+    bicep_dict['DeploymentName'] = translate_to_bicep(f"Exemption: {az_dump_dict['Properties']['DisplayName']}")
     for key in bicep_keys:
         bicep_dict[key] = translate_to_bicep(az_dump_dict['Properties'][key]) if az_dump_dict['Properties'].get(key) is not None else translate_to_bicep(default_empty[key])
 
@@ -162,7 +166,7 @@ var parameters = {{{policy_parameters}}}
 var policyRule = {PolicyRule}
 
 module policy_definition '../../example_modules/policy_definition.bicep' = {{
-    name: {DisplayName}
+    name: {DeploymentName}
     params: {{
         name: {Name}
         description: {Description}
@@ -275,7 +279,7 @@ var policyDefinitions = {policyDefinitions}
 
 
 module policySet '../../example_modules/initiative.bicep' = {{
-    name: {DisplayName}
+    name: {DeploymentName}
     params: {{
         name: {Name}
         displayName: {DisplayName}
@@ -300,7 +304,7 @@ def process_policy_sets(initiatives_file: dict, definitions_file: list, output_d
     Path(output_dir).mkdir(parents=True, exist_ok=True)
     
     definitions_reference = generate_reference_dict(definitions_file)
-    for set in initiatives_file:
+    for set in enumerate_duplicate_display_names(initiatives_file):
         set_bicep = generate_bicep_policy_set(set, definitions_reference)
         file_path = f"{output_dir}/{set['Properties']['DisplayName']}.bicep"
         _write_bicep_file(file_path, set_bicep)
@@ -375,7 +379,7 @@ param enforcementMode string = {EnforcementMode}
 var parameters = {{{assignmentParameters}}}
 
 module assignment '../../example_modules/policy_assignment.bicep' = {{
-  name: {DisplayName}
+  name: {DeploymentName}
   params: {{
     name: {Name}
     displayName: {DisplayName}
@@ -393,7 +397,7 @@ def process_policy_assignments(assignments_file: dict, definitions_file: list, i
     Path(output_dir).mkdir(parents=True, exist_ok=True)
     
     initiatives_definitions_reference = { 'definitions': generate_reference_dict(definitions_file), 'initiatives': generate_reference_dict(initiatives_file)} 
-    for assignment in assignments_file:
+    for assignment in enumerate_duplicate_display_names(assignments_file):
         assignment_bicep = generate_bicep_policy_assignment(assignment, initiatives_definitions_reference)
         file_path = f"{output_dir}/{assignment['Properties']['DisplayName']}.bicep"
         _write_bicep_file(file_path, assignment_bicep)
@@ -406,7 +410,7 @@ def generate_bicep_policy_exemption(exemption_dict: dict) -> str:
 
 
 module exemption '../../example_modules/policy_exemption.bicep' = {{
-    name: {DisplayName}
+    name: {DeploymentName}
     params: {{
         name: {Name}
         displayName: {DisplayName}
@@ -422,7 +426,7 @@ module exemption '../../example_modules/policy_exemption.bicep' = {{
 def process_policy_exemptions(exemptions_file: dict, output_dir: str = "./policies/exemptions") -> None:
     Path(output_dir).mkdir(parents=True, exist_ok=True)
     
-    for exemption in exemptions_file:
+    for exemption in enumerate_duplicate_display_names(exemptions_file):
         exemption_bicep = generate_bicep_policy_exemption(exemption)
         file_path = f"{output_dir}/{exemption['Properties']['DisplayName']}.bicep"
         _write_bicep_file(file_path, exemption_bicep)
@@ -436,8 +440,8 @@ def main():
     exemptions_file = argv[4]
     root_output_directory = argv[-1]
 
-    definitions_list = _load_json_dump(definitions_file)
-    initiatives_list = _load_json_dump(initiatives_file)
+    definitions_list = enumerate_duplicate_display_names(_load_json_dump(definitions_file))
+    initiatives_list = enumerate_duplicate_display_names(_load_json_dump(initiatives_file))
     definitions_directory = f"{root_output_directory}/definitions"
     initiatives_directory = f"{root_output_directory}/initiatives"
     assignments_directory = f"{root_output_directory}/assignments"

@@ -80,7 +80,7 @@ var policyRule = {
 }
 
 module policy_definition '../../example_modules/policy_definition.bicep' = {
-    name: 'Allowed locations for resource groups'
+    name: 'Definition: Allowed locations for resource groups'
     params: {
         name: 'e765b5de-1225-4ba3-bd56-1ac6695af988'
         description: 'This policy enables you to restrict the locations your organization can create resource groups in. Use to enforce your geo-compliance requirements.'
@@ -372,7 +372,7 @@ var policyRule = {
 }
 
 module policy_definition '../../example_modules/policy_definition.bicep' = {
-    name: '[Preview]: Configure VMSS created with Shared Image Gallery images to install the Guest Attestation extension'
+    name: 'Definition: [Preview]: Configure VMSS created with Shared Image Gallery images to install the Guest Attestation extension'
     params: {
         name: '009259b0-12e8-42c9-94e7-7af86aa58d13'
         description: 'Configure VMSS created with Shared Image Gallery images to automatically install the Guest Attestation extension to allow Azure Security Center to proactively attest and monitor the boot integrity. Boot integrity is attested via Remote Attestation.'

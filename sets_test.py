@@ -103,7 +103,7 @@ var policyDefinitions = [
 
 
 module policySet '../../example_modules/initiative.bicep' = {
-    name: 'Custom Set'
+    name: 'Initiative: Custom Set'
     params: {
         name: 'custom'
         displayName: 'Custom Set'
