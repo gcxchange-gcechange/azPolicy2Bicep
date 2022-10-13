@@ -10,7 +10,7 @@ class TestPolicyPolicySets(unittest.TestCase):
     def test_generate_bicep_policy_set(Self):
         test_reference_dict = {
             'Deny-VM-Creation': {
-                'DisplayName': 'deny vm creation test'
+                'DisplayName': 'deny vm creation 2.7 test'
             }
         }
         test_policy_set_json = """{
@@ -77,8 +77,8 @@ var policyDefinitionGroups = [
 var parameters = {}
 var policyDefinitions = [
     {
-        policyDefinitionReferenceId: toLower(replace(module_deny_vm_creation_test.outputs.displayName, ' ', '-'))
-        policyDefinitionId: module_deny_vm_creation_test.outputs.ID
+        policyDefinitionReferenceId: toLower(replace(module_deny_vm_creation_2_7_test.outputs.displayName, ' ', '-'))
+        policyDefinitionId: module_deny_vm_creation_2_7_test.outputs.ID
         parameters: {}
         groupNames: [
             'Custom'
@@ -115,8 +115,8 @@ module policySet '../../example_modules/initiative.bicep' = {
 
 
 // definitions from modules
-module module_deny_vm_creation_test '../definitions/deny vm creation test.bicep' = {
-    name: 'deny vm creation test'
+module module_deny_vm_creation_2_7_test '../definitions/deny vm creation 2.7 test.bicep' = {
+    name: 'deny vm creation 2.7 test'
 }
 
 

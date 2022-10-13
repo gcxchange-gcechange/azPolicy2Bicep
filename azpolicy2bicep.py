@@ -70,10 +70,6 @@ def _translate_assignment(az_dump_dict: dict, defset_reference: dict) -> dict:
         0: 'Default',
         1: 'DoNotEnforce'
     }
-    defset_type_map = {
-        'policyDefinitions': 'definitions',
-        'policySetDefinitions': 'initiatives'
-    }
 
     bicep_dict['Name'] = translate_to_bicep(az_dump_dict['Name'])
     bicep_dict['EnforcementMode'] = translate_to_bicep(enforcement_mode_map[az_dump_dict['Properties']['EnforcementMode']])
@@ -83,8 +79,7 @@ def _translate_assignment(az_dump_dict: dict, defset_reference: dict) -> dict:
 
     definition_id_parts = az_dump_dict['Properties']['PolicyDefinitionId'].split('/')
     if definition_id_parts[1] == 'subscriptions' or definition_id_parts[3] == 'managementGroups':
-        reference_name = defset_reference[defset_type_map[definition_id_parts[-2]]][definition_id_parts[-1]]['DisplayName'].replace('-', '_').replace(' ', '_')
-        bicep_dict['PolicyDefinitionId'] = f"{reference_name}.outputs.ID"
+        bicep_dict['PolicyDefinitionId'] = "policy.outputs.ID"
 
     return bicep_dict
 
@@ -235,7 +230,7 @@ def generate_set_policy_def_section(set_dict: dict, definitions_reference: dict)
 
         policyDefinitionId = policy_set_definition['policyDefinitionId'].split('/')
         if policyDefinitionId[1] == 'subscriptions' or policyDefinitionId[3] == 'managementGroups':    # custom definition
-            definition_reference_name = "module_" + definitions_reference[policyDefinitionId[-1]]['DisplayName'].replace('-', '_').replace(' ', '_')
+            definition_reference_name = "module_" + definitions_reference[policyDefinitionId[-1]]['DisplayName'].replace('-', '_').replace(' ', '_').replace('.', '_')
             policy_set_definition['policyDefinitionId'] = "{policyDefinitionId}"
             format_strings['policyDefinitionId'] = f"{definition_reference_name}.outputs.ID"
             template_strings.append(policy_set_definition['policyDefinitionId'])
@@ -263,7 +258,7 @@ def generate_set_modules_section(set_dict: dict, definitions_reference: dict) ->
             continue
 
         definition_display_name = definitions_reference[policyDefinitionId[-1]]['DisplayName']
-        bicep_modules.append( bicep_module_template.format(name=definition_display_name, name_underscores=definition_display_name.replace('-', '_').replace(' ', '_')) )
+        bicep_modules.append( bicep_module_template.format(name=definition_display_name, name_underscores=definition_display_name.replace('-', '_').replace(' ', '_').replace('.', '_')) )
 
     return '\n'.join(bicep_modules)
 
@@ -342,7 +337,7 @@ def generate_assignment_parameter_section(assignment_dict: dict) -> dict:
 def generate_assignment_modules_section(assignment_dict: dict, initiatives_definitions_reference: dict) -> str:
     bicep_modules_string = ''
     bicep_module_template = """
-module {name_underscores} '../{def_type}/{name}.bicep' = {{
+module policy '../{def_type}/{name}.bicep' = {{
     name: '{name}'
 }}
 """
@@ -358,7 +353,7 @@ module {name_underscores} '../{def_type}/{name}.bicep' = {{
 
     def_type = defset_type_map[policyDefinitionId[-2]]
     display_name = initiatives_definitions_reference[def_type][policyDefinitionId[-1]]['DisplayName']
-    bicep_modules_string += bicep_module_template.format(name=display_name, name_underscores=display_name.replace('-', '_').replace(' ', '_'), def_type=def_type)
+    bicep_modules_string += bicep_module_template.format(name=display_name, def_type=def_type)
 
     return bicep_modules_string
 

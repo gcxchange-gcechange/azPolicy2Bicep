@@ -141,13 +141,13 @@ module assignment '../../example_modules/policy_assignment.bicep' = {
   params: {
     name: 'location-VMs'
     displayName: 'Custom set'
-    policyDefinitionId: custom_initiative.outputs.ID
+    policyDefinitionId: policy.outputs.ID
     parameters: parameters
     enforcementMode: enforcementMode
   }
 }
 
-module custom_initiative '../initiatives/custom initiative.bicep' = {
+module policy '../initiatives/custom initiative.bicep' = {
     name: 'custom initiative'
 }
 """
