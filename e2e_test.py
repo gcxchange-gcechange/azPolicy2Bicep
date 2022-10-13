@@ -378,14 +378,14 @@ module assignment '../../example_modules/policy_assignment.bicep' = {
   params: {
     name: 'location-VMs'
     displayName: 'Custom set'
-    policyDefinitionId: custom.outputs.ID
+    policyDefinitionId: Custom_Set.outputs.ID
     parameters: parameters
     enforcementMode: enforcementMode
   }
 }
 
-module custom '../initiatives/custom.bicep' = {
-    name: 'custom'
+module Custom_Set '../initiatives/Custom Set.bicep' = {
+    name: 'Custom Set'
 }
 """,
                 'ASC Default (subscription: test-123).bicep': """targetScope = 'managementGroup'

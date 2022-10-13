@@ -55,7 +55,7 @@ def _translate_set(az_dump_dict: dict) -> dict:
 
     return bicep_dict
 
-def _translate_assignment(az_dump_dict: dict) -> dict:
+def _translate_assignment(az_dump_dict: dict, defset_reference: dict) -> dict:
     bicep_keys = ['Description', 'DisplayName', 'PolicyDefinitionId', 'NonComplianceMessages']
     default_empty = {
         'Description': '',
@@ -68,6 +68,10 @@ def _translate_assignment(az_dump_dict: dict) -> dict:
         0: 'Default',
         1: 'DoNotEnforce'
     }
+    defset_type_map = {
+        'policyDefinitions': 'definitions',
+        'policySetDefinitions': 'initiatives'
+    }
 
     bicep_dict['Name'] = translate_to_bicep(az_dump_dict['Name'])
     bicep_dict['EnforcementMode'] = translate_to_bicep(enforcement_mode_map[az_dump_dict['Properties']['EnforcementMode']])
@@ -76,7 +80,8 @@ def _translate_assignment(az_dump_dict: dict) -> dict:
 
     definition_id_parts = az_dump_dict['Properties']['PolicyDefinitionId'].split('/')
     if definition_id_parts[1] == 'subscriptions' or definition_id_parts[3] == 'managementGroups':
-        bicep_dict['PolicyDefinitionId'] = f"{definition_id_parts[-1].replace('-', '_')}.outputs.ID"
+        reference_name = defset_reference[defset_type_map[definition_id_parts[-2]]][definition_id_parts[-1]]['DisplayName'].replace('-', '_').replace(' ', '_')
+        bicep_dict['PolicyDefinitionId'] = f"{reference_name}.outputs.ID"
 
     return bicep_dict
 
@@ -330,7 +335,7 @@ def generate_assignment_parameter_section(assignment_dict: dict) -> dict:
 
     return  {'assignment_parameters': assignment_parameters, 'bicep_params': bicep_params}
 
-def generate_assignment_modules_section(assignment_dict: dict) -> str:
+def generate_assignment_modules_section(assignment_dict: dict, initiatives_definitions_reference: dict) -> str:
     bicep_modules_string = ''
     bicep_module_template = """
 module {name_underscores} '../{def_type}/{name}.bicep' = {{
@@ -347,11 +352,13 @@ module {name_underscores} '../{def_type}/{name}.bicep' = {{
     if policyDefinitionId[1] == 'providers' and policyDefinitionId[2] == 'Microsoft.Authorization':    # built-in definition
         return ''
 
-    bicep_modules_string += bicep_module_template.format(name=policyDefinitionId[-1], name_underscores=policyDefinitionId[-1].replace('-', '_'), def_type=defset_type_map[policyDefinitionId[-2]])
+    def_type = defset_type_map[policyDefinitionId[-2]]
+    display_name = initiatives_definitions_reference[def_type][policyDefinitionId[-1]]['DisplayName']
+    bicep_modules_string += bicep_module_template.format(name=display_name, name_underscores=display_name.replace('-', '_').replace(' ', '_'), def_type=def_type)
 
     return bicep_modules_string
 
-def generate_bicep_policy_assignment(assignment_dict: dict) -> str:
+def generate_bicep_policy_assignment(assignment_dict: dict, initiatives_definitions_reference: dict) -> str:
     parameters_dict = generate_assignment_parameter_section(assignment_dict)
 
     bicep_policy_template = """targetScope = 'managementGroup'
@@ -379,13 +386,15 @@ module assignment '../../example_modules/policy_assignment.bicep' = {{
 }}
 {definition_modules}"""
 
-    return bicep_policy_template.format( **_translate_assignment(assignment_dict), bicep_params=parameters_dict['bicep_params'], assignmentParameters=parameters_dict['assignment_parameters'], definition_modules=generate_assignment_modules_section(assignment_dict))
+    return bicep_policy_template.format( **_translate_assignment(assignment_dict, initiatives_definitions_reference), bicep_params=parameters_dict['bicep_params'], 
+        assignmentParameters=parameters_dict['assignment_parameters'], definition_modules=generate_assignment_modules_section(assignment_dict, initiatives_definitions_reference))
 
-def process_policy_assignments(assignments_file: dict, output_dir: str = "./policies/assignments") -> None:
+def process_policy_assignments(assignments_file: dict, definitions_file: list, initiatives_file: list, output_dir: str = "./policies/assignments") -> None:
     Path(output_dir).mkdir(parents=True, exist_ok=True)
     
+    initiatives_definitions_reference = { 'definitions': generate_reference_dict(definitions_file), 'initiatives': generate_reference_dict(initiatives_file)} 
     for assignment in assignments_file:
-        assignment_bicep = generate_bicep_policy_assignment(assignment)
+        assignment_bicep = generate_bicep_policy_assignment(assignment, initiatives_definitions_reference)
         file_path = f"{output_dir}/{assignment['Properties']['DisplayName']}.bicep"
         _write_bicep_file(file_path, assignment_bicep)
 
@@ -428,13 +437,14 @@ def main():
     root_output_directory = argv[-1]
 
     definitions_list = _load_json_dump(definitions_file)
+    initiatives_list = _load_json_dump(initiatives_file)
     definitions_directory = f"{root_output_directory}/definitions"
     initiatives_directory = f"{root_output_directory}/initiatives"
     assignments_directory = f"{root_output_directory}/assignments"
     exemptions_directory = f"{root_output_directory}/exemptions"
     process_policy_definitions(definitions_list, definitions_directory)
-    process_policy_sets(_load_json_dump(initiatives_file), definitions_list, initiatives_directory)
-    process_policy_assignments(_load_json_dump(assignments_file), assignments_directory)
+    process_policy_sets(initiatives_list, definitions_list, initiatives_directory)
+    process_policy_assignments(_load_json_dump(assignments_file), definitions_list, initiatives_list, assignments_directory)
     process_policy_exemptions(_load_json_dump(exemptions_file), exemptions_directory)
 
     return

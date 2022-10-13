@@ -85,9 +85,16 @@ module assignment '../../example_modules/policy_assignment.bicep' = {
 }
 """
         Self.maxDiff = None
-        Self.assertEqual( generate_bicep_policy_assignment(json.loads(test_policy_set_json)), expected_output )
+        Self.assertEqual( generate_bicep_policy_assignment(json.loads(test_policy_set_json), {}), expected_output )
 
     def test_generate_bicep_custom_policy_assignment(Self):
+        test_reference_dict = {
+            'initiatives': {
+                'custom': {
+                    'DisplayName': 'custom initiative'
+                }
+            }
+        }
         test_policy_set_json = """{
         "Identity": null,
         "Location": null,
@@ -134,19 +141,22 @@ module assignment '../../example_modules/policy_assignment.bicep' = {
   params: {
     name: 'location-VMs'
     displayName: 'Custom set'
-    policyDefinitionId: custom.outputs.ID
+    policyDefinitionId: custom_initiative.outputs.ID
     parameters: parameters
     enforcementMode: enforcementMode
   }
 }
 
-module custom '../initiatives/custom.bicep' = {
-    name: 'custom'
+module custom_initiative '../initiatives/custom initiative.bicep' = {
+    name: 'custom initiative'
 }
 """
-        Self.assertEqual( generate_bicep_policy_assignment(json.loads(test_policy_set_json)), expected_output )
+        Self.maxDiff = None
+        Self.assertEqual( generate_bicep_policy_assignment(json.loads(test_policy_set_json), test_reference_dict), expected_output )
 
     def test_write_assignment_files(Self):
+        test_definitions_dump = []
+        test_sets_dump = [{'Name': 'custom', 'Properties': {'DisplayName': 'custom initiative'}}]
         test_assignments_dump = """[
   {
     "Identity": null,
@@ -214,7 +224,7 @@ module custom '../initiatives/custom.bicep' = {
             for file in listdir(expected_output_directory):
                 remove(f"{expected_output_directory}/{file}")
 
-        process_policy_assignments(json.loads(test_assignments_dump), expected_output_directory)
+        process_policy_assignments(json.loads(test_assignments_dump), test_definitions_dump, test_sets_dump, expected_output_directory)
 
         files_list = listdir(expected_output_directory)
         files_list.sort()
