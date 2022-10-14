@@ -14,6 +14,13 @@ class TestBicepTranslation(unittest.TestCase):
         Self.assertEqual( translate_to_bicep(testInput, "String"), expectedOutput )
         Self.assertEqual( translate_to_bicep(testInput), expectedOutput )
 
+    def test_translate_multiline_string(Self):
+        testInput = "this test's string \n and some more"
+        expectedOutput = """'''this test\\'s string 
+ and some more'''"""
+        Self.assertEqual( translate_to_bicep(testInput, "String"), expectedOutput )
+        Self.assertEqual( translate_to_bicep(testInput), expectedOutput )
+
     def test_translate_datetime(Self):
         testInput = "2042-02-28T19:45:12.7085046Z"
         expectedOutput = "'2042-02-28T19:45:12.7085046Z'"

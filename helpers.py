@@ -18,6 +18,9 @@ def translate_to_bicep(not_bicep: str, type_given: str = '', nested: bool = Fals
         if template and not_bicep in template:
             return not_bicep
         bicepString = not_bicep.replace("'", "\\'")
+
+        if '\n' in not_bicep:
+            return f"'''{bicepString}'''"   # bicep multiline string
         return f"'{bicepString}'"
 
     if type_given.lower() == 'array' or type(not_bicep) is list:
