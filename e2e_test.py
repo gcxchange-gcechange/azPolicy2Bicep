@@ -81,7 +81,7 @@ var policyRule = {
 }
 
 module policy_definition '../../example_modules/policy_definition.bicep' = {
-    name: 'Definition: Deny VM Creation test'
+    name: 'Definition-Deny_VM_Creation_test'
     params: {
         name: 'Deny-VM-Creation'
         description: 'Deny VM Creation - v2'
@@ -116,7 +116,7 @@ var policyRule = {
 }
 
 module policy_definition '../../example_modules/policy_definition.bicep' = {
-    name: 'Definition: Deny VM Creation test2'
+    name: 'Definition-Deny_VM_Creation_test2'
     params: {
         name: 'Deny-VM-Creation2'
         description: 'Deny VM Creation2 - v2'
@@ -180,7 +180,7 @@ var policyDefinitions = [
 
 
 module policySet '../../example_modules/initiative.bicep' = {
-    name: 'Initiative: Custom Set'
+    name: 'Initiative-Custom_Set'
     params: {
         name: 'custom'
         displayName: 'Custom Set'
@@ -308,7 +308,7 @@ var policyDefinitions = [
 
 
 module policySet '../../example_modules/initiative.bicep' = {
-    name: 'Initiative: Audit machines with insecure password security settings'
+    name: 'Initiative-Audit_machines_with_insecure_password_security_settings'
     params: {
         name: '095e4ed9-c835-4ab6-9439-b5644362a06c'
         displayName: 'Audit machines with insecure password security settings'
@@ -350,7 +350,7 @@ var parameters = {
 }
 
 module assignment '../../example_modules/policy_assignment.bicep' = {
-  name: 'Assignment: Restrict to Canada Central and Canada East regions for Resources'
+  name: 'Assignment-Restrict_to_Canada_Central_and_Canada_East_regions_for_Resources'
   params: {
     name: 'location-resources'
     displayName: 'Restrict to Canada Central and Canada East regions for Resources'
@@ -374,7 +374,7 @@ param enforcementMode string = 'DoNotEnforce'
 var parameters = {}
 
 module assignment '../../example_modules/policy_assignment.bicep' = {
-  name: 'Assignment: Custom set'
+  name: 'Assignment-Custom_set'
   params: {
     name: 'location-VMs'
     displayName: 'Custom set'
@@ -402,7 +402,7 @@ param enforcementMode string = 'Default'
 var parameters = {}
 
 module assignment '../../example_modules/policy_assignment.bicep' = {
-  name: 'Assignment: ASC Default (subscription: test-123)'
+  name: 'Assignment-ASC_Default__subscription__test_123_'
   params: {
     name: 'SecurityCenterBuiltIn'
     displayName: 'ASC Default (subscription: test-123)'
@@ -418,7 +418,7 @@ module assignment '../../example_modules/policy_assignment.bicep' = {
 
 
 module exemption '../../example_modules/policy_exemption.bicep' = {
-    name: 'Exemption: a test exemption'
+    name: 'Exemption-a_test_exemption'
     params: {
         name: 'testexemp'
         displayName: 'a test exemption'

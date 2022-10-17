@@ -74,7 +74,7 @@ var parameters = {
 }
 
 module assignment '../../example_modules/policy_assignment.bicep' = {
-  name: 'Assignment: Restrict to Canada Central and Canada East regions for Resources'
+  name: 'Assignment-Restrict_to_Canada_Central_and_Canada_East_regions_for_Resources'
   params: {
     name: 'location-resources'
     displayName: 'Restrict to Canada Central and Canada East regions for Resources'
@@ -137,7 +137,7 @@ param enforcementMode string = 'DoNotEnforce'
 var parameters = {}
 
 module assignment '../../example_modules/policy_assignment.bicep' = {
-  name: 'Assignment: Custom set'
+  name: 'Assignment-Custom_set'
   params: {
     name: 'location-VMs'
     displayName: 'Custom set'

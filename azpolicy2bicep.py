@@ -27,7 +27,7 @@ def _translate_definition(az_dump_dict: dict) -> dict:
 
     bicep_dict['Name'] = translate_to_bicep(az_dump_dict['Name'])
     bicep_dict['PolicyType'] = translate_to_bicep(policy_type_map[az_dump_dict['Properties']['PolicyType']])
-    bicep_dict['DeploymentName'] = translate_to_bicep(f"Definition: {az_dump_dict['Properties']['DisplayName']}")
+    bicep_dict['DeploymentName'] = translate_to_bicep(f"Definition-{specials_to_underscore(az_dump_dict['Properties']['DisplayName'])}")
     for key in bicep_keys:
         bicep_dict[key] = translate_to_bicep(az_dump_dict['Properties'][key])
 
@@ -51,7 +51,7 @@ def _translate_set(az_dump_dict: dict) -> dict:
 
     bicep_dict['Name'] = translate_to_bicep(az_dump_dict['Name'])
     bicep_dict['PolicyType'] = translate_to_bicep(policy_type_map[az_dump_dict['Properties']['PolicyType']])
-    bicep_dict['DeploymentName'] = translate_to_bicep(f"Initiative: {az_dump_dict['Properties']['DisplayName']}")
+    bicep_dict['DeploymentName'] = translate_to_bicep(f"Initiative-{specials_to_underscore(az_dump_dict['Properties']['DisplayName'])}")
     for key in bicep_keys:
         bicep_dict[key] = translate_to_bicep(az_dump_dict['Properties'][key]) if az_dump_dict['Properties'].get(key) is not None else translate_to_bicep(default_empty[key])
 
@@ -73,7 +73,7 @@ def _translate_assignment(az_dump_dict: dict, defset_reference: dict) -> dict:
 
     bicep_dict['Name'] = translate_to_bicep(az_dump_dict['Name'])
     bicep_dict['EnforcementMode'] = translate_to_bicep(enforcement_mode_map[az_dump_dict['Properties']['EnforcementMode']])
-    bicep_dict['DeploymentName'] = translate_to_bicep(f"Assignment: {az_dump_dict['Properties']['DisplayName']}")
+    bicep_dict['DeploymentName'] = translate_to_bicep(f"Assignment-{specials_to_underscore(az_dump_dict['Properties']['DisplayName'])}")
     for key in bicep_keys:
         bicep_dict[key] = translate_to_bicep(az_dump_dict['Properties'][key]) if az_dump_dict['Properties'].get(key) is not None else translate_to_bicep(default_empty[key])
 
@@ -93,7 +93,7 @@ def _translate_exemption(az_dump_dict: dict) -> dict:
     bicep_dict = {}
 
     bicep_dict['Name'] = translate_to_bicep(az_dump_dict['Name'])
-    bicep_dict['DeploymentName'] = translate_to_bicep(f"Exemption: {az_dump_dict['Properties']['DisplayName']}")
+    bicep_dict['DeploymentName'] = translate_to_bicep(f"Exemption-{specials_to_underscore(az_dump_dict['Properties']['DisplayName'])}")
     for key in bicep_keys:
         bicep_dict[key] = translate_to_bicep(az_dump_dict['Properties'][key]) if az_dump_dict['Properties'].get(key) is not None else translate_to_bicep(default_empty[key])
 

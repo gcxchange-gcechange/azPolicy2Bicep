@@ -80,7 +80,7 @@ var policyRule = {
 }
 
 module policy_definition '../../example_modules/policy_definition.bicep' = {
-    name: 'Definition: Allowed locations for resource groups'
+    name: 'Definition-Allowed_locations_for_resource_groups'
     params: {
         name: 'e765b5de-1225-4ba3-bd56-1ac6695af988'
         description: 'This policy enables you to restrict the locations your organization can create resource groups in. Use to enforce your geo-compliance requirements.'
@@ -372,7 +372,7 @@ var policyRule = {
 }
 
 module policy_definition '../../example_modules/policy_definition.bicep' = {
-    name: 'Definition: [Preview]: Configure VMSS created with Shared Image Gallery images to install the Guest Attestation extension'
+    name: 'Definition-_Preview___Configure_VMSS_created_with_Shared_Image_Gallery_images_to_install_the_Guest_Attestation_extension'
     params: {
         name: '009259b0-12e8-42c9-94e7-7af86aa58d13'
         description: 'Configure VMSS created with Shared Image Gallery images to automatically install the Guest Attestation extension to allow Azure Security Center to proactively attest and monitor the boot integrity. Boot integrity is attested via Remote Attestation.'
@@ -388,6 +388,7 @@ module policy_definition '../../example_modules/policy_definition.bicep' = {
 output ID string = policy_definition.outputs.ID
 output displayName string = policy_definition.outputs.displayName
 """
+        Self.maxDiff = None
         Self.assertEqual( generate_bicep_definition(json.loads(test_definition_json)), expected_output )
 
 ### not quite an end-to-end test, mainly concerned with the files being created / written properly
