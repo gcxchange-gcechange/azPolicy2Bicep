@@ -180,7 +180,7 @@ var policyDefinitions = [
 
 
 module policySet '../../example_modules/initiative.bicep' = {
-    name: 'Initiative-Custom_Set'
+    name: substring('Initiative-Custom_Set', 0, 64)
     params: {
         name: 'custom'
         displayName: 'Custom Set'
@@ -193,10 +193,10 @@ module policySet '../../example_modules/initiative.bicep' = {
 
 // definitions from modules
 module module_Deny_VM_Creation_test '../definitions/Deny VM Creation test.bicep' = {
-    name: 'Deny VM Creation test'
+    name: substring('Submodule-Deny_VM_Creation_test', 0, 64)
 }
 module module_Deny_VM_Creation_test2 '../definitions/Deny VM Creation test2.bicep' = {
-    name: 'Deny VM Creation test2'
+    name: substring('Submodule-Deny_VM_Creation_test2', 0, 64)
 }
 
 
@@ -308,7 +308,7 @@ var policyDefinitions = [
 
 
 module policySet '../../example_modules/initiative.bicep' = {
-    name: 'Initiative-Audit_machines_with_insecure_password_security_settings'
+    name: substring('Initiative-Audit_machines_with_insecure_password_security_settings', 0, 64)
     params: {
         name: '095e4ed9-c835-4ab6-9439-b5644362a06c'
         displayName: 'Audit machines with insecure password security settings'

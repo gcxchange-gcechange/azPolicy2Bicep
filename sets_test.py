@@ -103,7 +103,7 @@ var policyDefinitions = [
 
 
 module policySet '../../example_modules/initiative.bicep' = {
-    name: 'Initiative-Custom_Set'
+    name: substring('Initiative-Custom_Set', 0, 64)
     params: {
         name: 'custom'
         displayName: 'Custom Set'
@@ -116,7 +116,7 @@ module policySet '../../example_modules/initiative.bicep' = {
 
 // definitions from modules
 module module_deny_vm_creation_2_7_test '../definitions/deny vm creation 2.7 test.bicep' = {
-    name: 'deny vm creation 2.7 test'
+    name: substring('Submodule-deny_vm_creation_2_7_test', 0, 64)
 }
 
 
