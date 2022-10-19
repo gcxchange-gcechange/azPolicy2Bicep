@@ -161,7 +161,7 @@ var parameters = {{{policy_parameters}}}
 var policyRule = {PolicyRule}
 
 module policy_definition '../../example_modules/policy_definition.bicep' = {{
-    name: {DeploymentName}
+    name: substring({DeploymentName}, 0, 64)
     params: {{
         name: {Name}
         description: {Description}
@@ -405,7 +405,7 @@ def generate_bicep_policy_exemption(exemption_dict: dict) -> str:
 
 
 module exemption '../../example_modules/policy_exemption.bicep' = {{
-    name: {DeploymentName}
+    name: substring({DeploymentName}, 0, 64)
     params: {{
         name: {Name}
         displayName: {DisplayName}

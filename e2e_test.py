@@ -81,7 +81,7 @@ var policyRule = {
 }
 
 module policy_definition '../../example_modules/policy_definition.bicep' = {
-    name: 'Definition-Deny_VM_Creation_test'
+    name: substring('Definition-Deny_VM_Creation_test', 0, 64)
     params: {
         name: 'Deny-VM-Creation'
         description: 'Deny VM Creation - v2'
@@ -116,7 +116,7 @@ var policyRule = {
 }
 
 module policy_definition '../../example_modules/policy_definition.bicep' = {
-    name: 'Definition-Deny_VM_Creation_test2'
+    name: substring('Definition-Deny_VM_Creation_test2', 0, 64)
     params: {
         name: 'Deny-VM-Creation2'
         description: 'Deny VM Creation2 - v2'
@@ -418,7 +418,7 @@ module assignment '../../example_modules/policy_assignment.bicep' = {
 
 
 module exemption '../../example_modules/policy_exemption.bicep' = {
-    name: 'Exemption-a_test_exemption'
+    name: substring('Exemption-a_test_exemption', 0, 64)
     params: {
         name: 'testexemp'
         displayName: 'a test exemption'

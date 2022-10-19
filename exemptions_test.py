@@ -30,7 +30,7 @@ class TestPolicyPolicySets(unittest.TestCase):
 
 
 module exemption '../../example_modules/policy_exemption.bicep' = {
-    name: 'Exemption-a_test_exemption'
+    name: substring('Exemption-a_test_exemption', 0, 64)
     params: {
         name: 'testexemp'
         displayName: 'a test exemption'
