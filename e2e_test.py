@@ -385,7 +385,7 @@ module assignment '../../example_modules/policy_assignment.bicep' = {
 }
 
 module policy '../initiatives/Custom Set.bicep' = {
-    name: 'Custom Set'
+    name: 'Custom_Set'
 }
 """,
                 'ASC Default (subscription: test-123).bicep': """targetScope = 'managementGroup'

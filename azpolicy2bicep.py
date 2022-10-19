@@ -338,7 +338,7 @@ def generate_assignment_modules_section(assignment_dict: dict, initiatives_defin
     bicep_modules_string = ''
     bicep_module_template = """
 module policy '../{def_type}/{name}.bicep' = {{
-    name: '{name}'
+    name: '{deployment_name}'
 }}
 """
 
@@ -353,7 +353,7 @@ module policy '../{def_type}/{name}.bicep' = {{
 
     def_type = defset_type_map[policyDefinitionId[-2]]
     display_name = initiatives_definitions_reference[def_type][policyDefinitionId[-1]]['DisplayName']
-    bicep_modules_string += bicep_module_template.format(name=display_name, def_type=def_type)
+    bicep_modules_string += bicep_module_template.format(name=display_name, def_type=def_type, deployment_name=specials_to_underscore(display_name))
 
     return bicep_modules_string
 
