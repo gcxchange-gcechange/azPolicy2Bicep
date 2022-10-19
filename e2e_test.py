@@ -350,7 +350,7 @@ var parameters = {
 }
 
 module assignment '../../example_modules/policy_assignment.bicep' = {
-  name: 'Assignment-Restrict_to_Canada_Central_and_Canada_East_regions_for_Resources'
+  name: substring('Assignment-Restrict_to_Canada_Central_and_Canada_East_regions_for_Resources', 0, 64)
   params: {
     name: 'location-resources'
     displayName: 'Restrict to Canada Central and Canada East regions for Resources'
@@ -374,7 +374,7 @@ param enforcementMode string = 'DoNotEnforce'
 var parameters = {}
 
 module assignment '../../example_modules/policy_assignment.bicep' = {
-  name: 'Assignment-Custom_set'
+  name: substring('Assignment-Custom_set', 0, 64)
   params: {
     name: 'location-VMs'
     displayName: 'Custom set'
@@ -385,7 +385,7 @@ module assignment '../../example_modules/policy_assignment.bicep' = {
 }
 
 module policy '../initiatives/Custom Set.bicep' = {
-    name: 'Custom_Set'
+    name: substring('Submodule-Custom_Set', 0, 64)
 }
 """,
                 'ASC Default (subscription: test-123).bicep': """targetScope = 'managementGroup'
@@ -402,7 +402,7 @@ param enforcementMode string = 'Default'
 var parameters = {}
 
 module assignment '../../example_modules/policy_assignment.bicep' = {
-  name: 'Assignment-ASC_Default__subscription__test_123_'
+  name: substring('Assignment-ASC_Default__subscription__test_123_', 0, 64)
   params: {
     name: 'SecurityCenterBuiltIn'
     displayName: 'ASC Default (subscription: test-123)'

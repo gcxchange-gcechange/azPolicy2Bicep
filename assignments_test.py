@@ -74,7 +74,7 @@ var parameters = {
 }
 
 module assignment '../../example_modules/policy_assignment.bicep' = {
-  name: 'Assignment-Restrict_to_Canada_Central_and_Canada_East_regions_for_Resources'
+  name: substring('Assignment-Restrict_to_Canada_Central_and_Canada_East_regions_for_Resources', 0, 64)
   params: {
     name: 'location-resources'
     displayName: 'Restrict to Canada Central and Canada East regions for Resources'
@@ -137,7 +137,7 @@ param enforcementMode string = 'DoNotEnforce'
 var parameters = {}
 
 module assignment '../../example_modules/policy_assignment.bicep' = {
-  name: 'Assignment-Custom_set'
+  name: substring('Assignment-Custom_set', 0, 64)
   params: {
     name: 'location-VMs'
     displayName: 'Custom set'
@@ -148,7 +148,7 @@ module assignment '../../example_modules/policy_assignment.bicep' = {
 }
 
 module policy '../initiatives/custom initiative.bicep' = {
-    name: 'custom_initiative'
+    name: substring('Submodule-custom_initiative', 0, 64)
 }
 """
         Self.maxDiff = None
