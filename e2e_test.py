@@ -81,7 +81,7 @@ var policyRule = {
 }
 
 module policy_definition '../../example_modules/policy_definition.bicep' = {
-    name: substring('Definition-Deny_VM_Creation_test', 0, 64)
+    name: 'Definition-Deny_VM_Creation_test'
     params: {
         name: 'Deny-VM-Creation'
         description: 'Deny VM Creation - v2'
@@ -116,7 +116,7 @@ var policyRule = {
 }
 
 module policy_definition '../../example_modules/policy_definition.bicep' = {
-    name: substring('Definition-Deny_VM_Creation_test2', 0, 64)
+    name: 'Definition-Deny_VM_Creation_test2'
     params: {
         name: 'Deny-VM-Creation2'
         description: 'Deny VM Creation2 - v2'

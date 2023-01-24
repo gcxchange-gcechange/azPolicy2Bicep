@@ -80,7 +80,7 @@ var policyRule = {
 }
 
 module policy_definition '../../example_modules/policy_definition.bicep' = {
-    name: substring('Definition-Allowed_locations_for_resource_groups', 0, 64)
+    name: 'Definition-Allowed_locations_for_resource_groups'
     params: {
         name: 'e765b5de-1225-4ba3-bd56-1ac6695af988'
         description: 'This policy enables you to restrict the locations your organization can create resource groups in. Use to enforce your geo-compliance requirements.'
