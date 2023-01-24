@@ -374,7 +374,7 @@ param enforcementMode string = 'DoNotEnforce'
 var parameters = {}
 
 module assignment '../../example_modules/policy_assignment.bicep' = {
-  name: substring('Assignment-Custom_set', 0, 64)
+  name: 'Assignment-Custom_set'
   params: {
     name: 'location-VMs'
     displayName: 'Custom set'
@@ -402,7 +402,7 @@ param enforcementMode string = 'Default'
 var parameters = {}
 
 module assignment '../../example_modules/policy_assignment.bicep' = {
-  name: substring('Assignment-ASC_Default__subscription__test_123_', 0, 64)
+  name: 'Assignment-ASC_Default__subscription__test_123_'
   params: {
     name: 'SecurityCenterBuiltIn'
     displayName: 'ASC Default (subscription: test-123)'
@@ -418,7 +418,7 @@ module assignment '../../example_modules/policy_assignment.bicep' = {
 
 
 module exemption '../../example_modules/policy_exemption.bicep' = {
-    name: substring('Exemption-a_test_exemption', 0, 64)
+    name: 'Exemption-a_test_exemption'
     params: {
         name: 'testexemp'
         displayName: 'a test exemption'

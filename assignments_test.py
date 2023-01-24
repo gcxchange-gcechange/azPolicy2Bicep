@@ -137,7 +137,7 @@ param enforcementMode string = 'DoNotEnforce'
 var parameters = {}
 
 module assignment '../../example_modules/policy_assignment.bicep' = {
-  name: substring('Assignment-Custom_set', 0, 64)
+  name: 'Assignment-Custom_set'
   params: {
     name: 'location-VMs'
     displayName: 'Custom set'

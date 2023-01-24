@@ -13,7 +13,7 @@ class TestPolicyPolicySets(unittest.TestCase):
     "PolicyAssignmentId": "/subscriptions/test-123/providers/Microsoft.Authorization/policyAssignments/location-VMs",
     "PolicyDefinitionReferenceIds": null,
     "ExemptionCategory": "Waiver",
-    "DisplayName": "a test exemption",
+    "DisplayName": "a test exemption with a very ver very looooooooooooooooong name over 64 characters",
     "Description": "test exemption 1",
     "ExpiresOn": null,
     "Metadata": null
@@ -30,10 +30,10 @@ class TestPolicyPolicySets(unittest.TestCase):
 
 
 module exemption '../../example_modules/policy_exemption.bicep' = {
-    name: substring('Exemption-a_test_exemption', 0, 64)
+    name: substring('Exemption-a_test_exemption_with_a_very_ver_very_looooooooooooooooong_name_over_64_characters', 0, 64)
     params: {
         name: 'testexemp'
-        displayName: 'a test exemption'
+        displayName: 'a test exemption with a very ver very looooooooooooooooong name over 64 characters'
         description: 'test exemption 1'
         policyAssignmentId: '/subscriptions/test-123/providers/Microsoft.Authorization/policyAssignments/location-VMs'
         exemptionCategory: 'Waiver'

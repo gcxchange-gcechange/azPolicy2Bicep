@@ -80,6 +80,9 @@ def _translate_assignment(az_dump_dict: dict, defset_reference: dict) -> dict:
     bicep_dict['Name'] = translate_to_bicep(az_dump_dict['Name'])
     bicep_dict['EnforcementMode'] = translate_to_bicep(enforcement_mode_map[az_dump_dict['Properties']['EnforcementMode']])
     bicep_dict['DeploymentName'] = translate_to_bicep(f"Assignment-{specials_to_underscore(az_dump_dict['Properties']['DisplayName'])}")
+    if len(bicep_dict['DeploymentName']) > 64:
+        bicep_dict['DeploymentName'] = f"substring({bicep_dict['DeploymentName']}, 0, 64)"
+    
     for key in bicep_keys:
         bicep_dict[key] = translate_to_bicep(az_dump_dict['Properties'][key]) if az_dump_dict['Properties'].get(key) is not None else translate_to_bicep(default_empty[key])
 
@@ -100,6 +103,9 @@ def _translate_exemption(az_dump_dict: dict) -> dict:
 
     bicep_dict['Name'] = translate_to_bicep(az_dump_dict['Name'])
     bicep_dict['DeploymentName'] = translate_to_bicep(f"Exemption-{specials_to_underscore(az_dump_dict['Properties']['DisplayName'])}")
+    if len(bicep_dict['DeploymentName']) > 64:
+        bicep_dict['DeploymentName'] = f"substring({bicep_dict['DeploymentName']}, 0, 64)"
+    
     for key in bicep_keys:
         bicep_dict[key] = translate_to_bicep(az_dump_dict['Properties'][key]) if az_dump_dict['Properties'].get(key) is not None else translate_to_bicep(default_empty[key])
 
@@ -380,7 +386,7 @@ param enforcementMode string = {EnforcementMode}
 var parameters = {{{assignmentParameters}}}
 
 module assignment '../../example_modules/policy_assignment.bicep' = {{
-  name: substring({DeploymentName}, 0, 64)
+  name: {DeploymentName}
   params: {{
     name: {Name}
     displayName: {DisplayName}
@@ -411,7 +417,7 @@ def generate_bicep_policy_exemption(exemption_dict: dict) -> str:
 
 
 module exemption '../../example_modules/policy_exemption.bicep' = {{
-    name: substring({DeploymentName}, 0, 64)
+    name: {DeploymentName}
     params: {{
         name: {Name}
         displayName: {DisplayName}
