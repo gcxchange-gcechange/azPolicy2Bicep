@@ -30,7 +30,7 @@ def _translate_definition(az_dump_dict: dict) -> dict:
     bicep_dict['DeploymentName'] = translate_to_bicep(f"Definition-{specials_to_underscore(az_dump_dict['Properties']['DisplayName'])}")
     if len(bicep_dict['DeploymentName']) > 64:
         bicep_dict['DeploymentName'] = f"substring({bicep_dict['DeploymentName']}, 0, 64)"
-        
+    
     for key in bicep_keys:
         bicep_dict[key] = translate_to_bicep(az_dump_dict['Properties'][key])
 
@@ -55,6 +55,9 @@ def _translate_set(az_dump_dict: dict) -> dict:
     bicep_dict['Name'] = translate_to_bicep(az_dump_dict['Name'])
     bicep_dict['PolicyType'] = translate_to_bicep(policy_type_map[az_dump_dict['Properties']['PolicyType']])
     bicep_dict['DeploymentName'] = translate_to_bicep(f"Initiative-{specials_to_underscore(az_dump_dict['Properties']['DisplayName'])}")
+    if len(bicep_dict['DeploymentName']) > 64:
+        bicep_dict['DeploymentName'] = f"substring({bicep_dict['DeploymentName']}, 0, 64)"
+    
     for key in bicep_keys:
         bicep_dict[key] = translate_to_bicep(az_dump_dict['Properties'][key]) if az_dump_dict['Properties'].get(key) is not None else translate_to_bicep(default_empty[key])
 
@@ -277,7 +280,7 @@ var policyDefinitions = {policyDefinitions}
 
 
 module policySet '../../example_modules/initiative.bicep' = {{
-    name: substring({DeploymentName}, 0, 64)
+    name: {DeploymentName}
     params: {{
         name: {Name}
         displayName: {DisplayName}

@@ -180,7 +180,7 @@ var policyDefinitions = [
 
 
 module policySet '../../example_modules/initiative.bicep' = {
-    name: substring('Initiative-Custom_Set', 0, 64)
+    name: 'Initiative-Custom_Set'
     params: {
         name: 'custom'
         displayName: 'Custom Set'
