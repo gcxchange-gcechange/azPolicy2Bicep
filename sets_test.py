@@ -116,7 +116,7 @@ module policySet '../../example_modules/initiative.bicep' = {
 
 // definitions from modules
 module module_deny_vm_creation_2_7_test '../definitions/deny vm creation 2.7 test.bicep' = {
-    name: substring('Submodule-deny_vm_creation_2_7_test', 0, 64)
+    name: 'Submodule-deny_vm_creation_2_7_test'
 }
 
 

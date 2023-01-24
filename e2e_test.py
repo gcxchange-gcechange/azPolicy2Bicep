@@ -193,10 +193,10 @@ module policySet '../../example_modules/initiative.bicep' = {
 
 // definitions from modules
 module module_Deny_VM_Creation_test '../definitions/Deny VM Creation test.bicep' = {
-    name: substring('Submodule-Deny_VM_Creation_test', 0, 64)
+    name: 'Submodule-Deny_VM_Creation_test'
 }
 module module_Deny_VM_Creation_test2 '../definitions/Deny VM Creation test2.bicep' = {
-    name: substring('Submodule-Deny_VM_Creation_test2', 0, 64)
+    name: 'Submodule-Deny_VM_Creation_test2'
 }
 
 
@@ -385,7 +385,7 @@ module assignment '../../example_modules/policy_assignment.bicep' = {
 }
 
 module policy '../initiatives/Custom Set.bicep' = {
-    name: substring('Submodule-Custom_Set', 0, 64)
+    name: 'Submodule-Custom_Set'
 }
 """,
                 'ASC Default (subscription: test-123).bicep': """targetScope = 'managementGroup'

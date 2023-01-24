@@ -260,8 +260,11 @@ def generate_set_policy_def_section(set_dict: dict, definitions_reference: dict)
 
 def generate_set_modules_section(set_dict: dict, definitions_reference: dict) -> str:
     bicep_modules = []
-    bicep_module_template = """module module_{name_underscores} '../definitions/{name}.bicep' = {{
+    bicep_module_long_name_template = """module module_{name_underscores} '../definitions/{name}.bicep' = {{
     name: substring('Submodule-{name_underscores}', 0, 64)
+}}"""
+    bicep_module_template = """module module_{name_underscores} '../definitions/{name}.bicep' = {{
+    name: 'Submodule-{name_underscores}'
 }}"""
 
     for policy in set_dict['Properties']['PolicyDefinitions']:
@@ -270,7 +273,8 @@ def generate_set_modules_section(set_dict: dict, definitions_reference: dict) ->
             continue
 
         definition_display_name = definitions_reference[policyDefinitionId[-1]]['DisplayName']
-        bicep_modules.append( bicep_module_template.format(name=definition_display_name, name_underscores=specials_to_underscore(definition_display_name)) )
+        module_template = bicep_module_long_name_template if len(f"Submodule-{definition_display_name}") > 64 else bicep_module_template
+        bicep_modules.append( module_template.format(name=definition_display_name, name_underscores=specials_to_underscore(definition_display_name)) )
 
     return '\n'.join(bicep_modules)
 
@@ -348,9 +352,13 @@ def generate_assignment_parameter_section(assignment_dict: dict) -> dict:
 
 def generate_assignment_modules_section(assignment_dict: dict, initiatives_definitions_reference: dict) -> str:
     bicep_modules_string = ''
-    bicep_module_template = """
+    bicep_module_long_name_template = """
 module policy '../{def_type}/{name}.bicep' = {{
     name: substring('Submodule-{deployment_name}', 0, 64)
+}}"""
+    bicep_module_template = """
+module policy '../{def_type}/{name}.bicep' = {{
+    name: 'Submodule-{deployment_name}'
 }}
 """
 
@@ -365,7 +373,8 @@ module policy '../{def_type}/{name}.bicep' = {{
 
     def_type = defset_type_map[policyDefinitionId[-2]]
     display_name = initiatives_definitions_reference[def_type][policyDefinitionId[-1]]['DisplayName']
-    bicep_modules_string += bicep_module_template.format(name=display_name, def_type=def_type, deployment_name=specials_to_underscore(display_name))
+    module_template = bicep_module_long_name_template if len(f"Submodule-{display_name}") > 64 else bicep_module_template
+    bicep_modules_string += module_template.format(name=display_name, def_type=def_type, deployment_name=specials_to_underscore(display_name))
 
     return bicep_modules_string
 

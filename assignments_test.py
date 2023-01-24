@@ -148,7 +148,7 @@ module assignment '../../example_modules/policy_assignment.bicep' = {
 }
 
 module policy '../initiatives/custom initiative.bicep' = {
-    name: substring('Submodule-custom_initiative', 0, 64)
+    name: 'Submodule-custom_initiative'
 }
 """
         Self.maxDiff = None
