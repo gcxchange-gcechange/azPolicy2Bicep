@@ -90,6 +90,8 @@ def _translate_assignment(az_dump_dict: dict, defset_reference: dict) -> dict:
     if definition_id_parts[1] == 'subscriptions' or definition_id_parts[3] == 'managementGroups':
         bicep_dict['PolicyDefinitionId'] = "policy.outputs.ID"
 
+    bicep_dict['IdentityType'] = translate_to_bicep(az_dump_dict['Identity'].get('IdentityType')) if az_dump_dict['Identity'] is not None else 'null'
+
     return bicep_dict
 
 def _translate_exemption(az_dump_dict: dict) -> dict:
@@ -402,6 +404,7 @@ module assignment '../../example_modules/policy_assignment.bicep' = {{
     policyDefinitionId: {PolicyDefinitionId}
     parameters: parameters
     enforcementMode: enforcementMode
+    identity: {IdentityType}
   }}
 }}
 {definition_modules}"""

@@ -357,6 +357,7 @@ module assignment '../../example_modules/policy_assignment.bicep' = {
     policyDefinitionId: '/providers/Microsoft.Authorization/policyDefinitions/e56962a6-4747-49cd-b67b-bf8b01975c4c'
     parameters: parameters
     enforcementMode: enforcementMode
+    identity: null
   }
 }
 """,
@@ -381,6 +382,7 @@ module assignment '../../example_modules/policy_assignment.bicep' = {
     policyDefinitionId: policy.outputs.ID
     parameters: parameters
     enforcementMode: enforcementMode
+    identity: null
   }
 }
 
@@ -409,6 +411,7 @@ module assignment '../../example_modules/policy_assignment.bicep' = {
     policyDefinitionId: '/providers/Microsoft.Authorization/policySetDefinitions/1f3afdf9-d0c9-4c3d-847f-89da613e70a8'
     parameters: parameters
     enforcementMode: enforcementMode
+    identity: null
   }
 }
 """

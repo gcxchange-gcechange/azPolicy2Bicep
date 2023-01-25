@@ -81,6 +81,7 @@ module assignment '../../example_modules/policy_assignment.bicep' = {
     policyDefinitionId: '/providers/Microsoft.Authorization/policyDefinitions/e56962a6-4747-49cd-b67b-bf8b01975c4c'
     parameters: parameters
     enforcementMode: enforcementMode
+    identity: null
   }
 }
 """
@@ -96,7 +97,12 @@ module assignment '../../example_modules/policy_assignment.bicep' = {
             }
         }
         test_policy_set_json = """{
-        "Identity": null,
+        "Identity": {
+          "PrincipalId": "asd-123",
+          "TenantId": "321-sdfas",
+          "IdentityType": "SystemAssigned",
+          "UserAssignedIdentities": null
+        },
         "Location": null,
         "Name": "location-VMs",
         "ResourceId": "/providers/Microsoft.Management/managementGroups/test/providers/Microsoft.Authorization/policyAssignments/location-VMs",
@@ -144,6 +150,7 @@ module assignment '../../example_modules/policy_assignment.bicep' = {
     policyDefinitionId: policy.outputs.ID
     parameters: parameters
     enforcementMode: enforcementMode
+    identity: 'SystemAssigned'
   }
 }
 
