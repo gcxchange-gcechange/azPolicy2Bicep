@@ -91,6 +91,9 @@ def _translate_assignment(az_dump_dict: dict, defset_reference: dict) -> dict:
         bicep_dict['PolicyDefinitionId'] = "policy.outputs.ID"
 
     bicep_dict['IdentityType'] = translate_to_bicep(az_dump_dict['Identity'].get('IdentityType')) if az_dump_dict['Identity'] is not None else 'null'
+    bicep_dict['roleDefinitionIds'] = ''
+    if bicep_dict['IdentityType'] == translate_to_bicep("SystemAssigned"):  # roles assigned to an ID wouldn't be in the policy dumps so can only prepare a param for it
+        bicep_dict['roleDefinitionIds'] = f"\n{indent()}roleDefinitionIds: ['fill this out manually', 'https://docs.microsoft.com/azure/role-based-access-control/built-in-roles']"
 
     return bicep_dict
 
@@ -404,7 +407,7 @@ module assignment '../../example_modules/policy_assignment.bicep' = {{
     policyDefinitionId: {PolicyDefinitionId}
     parameters: parameters
     enforcementMode: enforcementMode
-    identity: {IdentityType}
+    identity: {IdentityType}{roleDefinitionIds}
   }}
 }}
 {definition_modules}"""

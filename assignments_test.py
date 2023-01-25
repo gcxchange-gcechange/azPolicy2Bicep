@@ -151,6 +151,7 @@ module assignment '../../example_modules/policy_assignment.bicep' = {
     parameters: parameters
     enforcementMode: enforcementMode
     identity: 'SystemAssigned'
+    roleDefinitionIds: ['fill this out manually', 'https://docs.microsoft.com/azure/role-based-access-control/built-in-roles']
   }
 }
 
